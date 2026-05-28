@@ -67,7 +67,7 @@
       <div class="stock-name" id="currentStockName">—</div>
       <div><div class="price-value" id="latestPrice">—</div><div class="price-change" id="priceChange">—</div></div>
     </div>
-    <div id="chartContainer"><div class="loading">종목을 선택해주세요</div></div>
+    <div id="chartContainer"><div class="loading">데이터 로딩 중...</div></div>
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div>종가</div>
       <div class="legend-item"><div class="legend-dot" style="background:#ff4466;border-radius:0;transform:rotate(45deg)"></div>공시 발생일</div>
@@ -75,7 +75,7 @@
   </div>
   <div class="table-section">
     <div class="table-header"><div class="table-title">공시 이력</div><div class="table-count" id="disclosureCount">—</div></div>
-    <div id="tableContainer"><div class="loading">종목을 선택해주세요</div></div>
+    <div id="tableContainer"><div class="loading">데이터 로딩 중...</div></div>
   </div>
 </div>
 
@@ -90,71 +90,17 @@
 </div>
 
 <script>
-const SHEET_ID = '1Dzfo4VwHPvp2YmRHgrI1piDRd5DDVxpwEHxqfrCykig';
 const STOCKS = ['삼성전자','SK하이닉스','현대차','카카오','NAVER','LG에너지솔루션','한화에어로스페이스','KB금융','HD현대','두산에너빌리티'];
+const DATA_URL = 'https://drive.google.com/uc?export=download&id=1eKHKoHOMxz12MQVFz3WBkGTnoi15nzZY';
 
 let currentStock = null;
 let chartInstance = null;
-let disclosureData = {};
-let priceCache = {};
-let discLoaded = false;
+let allData = null;
 
-// CSV fetch 방식 (빠름)
-async function fetchCSV(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-  const res = await fetch(url, { signal: AbortSignal.timeout(30000) });
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-  const text = await res.text();
-  return parseCSV(text);
-}
-
-function parseCSV(text) {
-  return text.trim().split('\n').map(line => {
-    const cols = []; let cur = '', inQ = false;
-    for (const c of line) {
-      if (c === '"') { inQ = !inQ; }
-      else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += c; }
-    }
-    cols.push(cur.trim());
-    return cols;
-  });
-}
-
-function toDate(raw) {
-  const s = String(raw).replace(/[^0-9]/g,'');
-  if (s.length === 8) return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`;
-  return null;
-}
-
-async function loadDisclosures() {
-  if (discLoaded) return;
-  const rows = await fetchCSV('이벤트DB');
-  rows.slice(1).forEach(r => {
-    const date = toDate(r[0]);
-    const name = r[2];
-    const title = r[4];
-    const change = r[7];
-    if (!date || !name || !title) return;
-    if (!disclosureData[name]) disclosureData[name] = [];
-    disclosureData[name].push({ date, title, change });
-  });
-  discLoaded = true;
-}
-
-async function loadStockPrice(name) {
-  if (priceCache[name]) return priceCache[name];
-  const rows = await fetchCSV(name);
-  const prices = [];
-  rows.slice(1).forEach(r => {
-    const date = toDate(r[0]);
-    const price = parseFloat(r[2]);
-    if (!date || isNaN(price) || price === 0) return;
-    prices.push({ date, price });
-  });
-  prices.sort((a,b) => a.date.localeCompare(b.date));
-  priceCache[name] = prices;
-  return prices;
+async function loadData() {
+  const res = await fetch(DATA_URL);
+  if (!res.ok) throw new Error('데이터 로드 실패');
+  allData = await res.json();
 }
 
 function renderButtons() {
@@ -163,35 +109,28 @@ function renderButtons() {
   ).join('');
 }
 
-async function selectStock(name) {
-  if (currentStock === name) return;
+function selectStock(name) {
   currentStock = name;
   renderButtons();
   document.getElementById('currentStockName').textContent = name;
-  document.getElementById('chartContainer').innerHTML = '<div class="loading">로딩 중...</div>';
-  document.getElementById('tableContainer').innerHTML = '<div class="loading">로딩 중...</div>';
 
-  try {
-    const [prices] = await Promise.all([loadStockPrice(name), loadDisclosures()]);
-    const disclosures = disclosureData[name] || [];
+  const prices = (allData.prices[name] || []).map(p => ({date:p[0], price:p[1]}));
+  const disclosures = allData.disclosures.filter(d => d.name === name);
 
-    if (prices.length > 0) {
-      const latest = prices[prices.length-1];
-      const prev = prices[prices.length-2];
-      document.getElementById('latestPrice').textContent = Number(latest.price).toLocaleString('ko-KR') + '원';
-      if (prev) {
-        const chg = ((latest.price - prev.price) / prev.price * 100).toFixed(2);
-        const el = document.getElementById('priceChange');
-        el.textContent = (chg > 0 ? '▲ +' : '▼ ') + Math.abs(chg) + '%';
-        el.className = 'price-change ' + (chg >= 0 ? 'up' : 'down');
-      }
+  if (prices.length > 0) {
+    const latest = prices[prices.length-1];
+    const prev = prices[prices.length-2];
+    document.getElementById('latestPrice').textContent = Number(latest.price).toLocaleString('ko-KR') + '원';
+    if (prev) {
+      const chg = ((latest.price - prev.price) / prev.price * 100).toFixed(2);
+      const el = document.getElementById('priceChange');
+      el.textContent = (chg > 0 ? '▲ +' : '▼ ') + Math.abs(chg) + '%';
+      el.className = 'price-change ' + (chg >= 0 ? 'up' : 'down');
     }
-    renderChart(prices, disclosures);
-    renderTable(disclosures);
-  } catch(e) {
-    document.getElementById('chartContainer').innerHTML = `<div class="error">⚠ 로드 실패: ${e.message}<br><small>구글 시트가 공개(뷰어)로 설정되어 있는지 확인해주세요</small></div>`;
-    document.getElementById('tableContainer').innerHTML = '';
   }
+
+  renderChart(prices, disclosures);
+  renderTable(disclosures);
 }
 
 function renderChart(prices, disclosures) {
@@ -302,8 +241,13 @@ function renderTable(disclosures) {
   c.innerHTML=`<table><thead><tr><th>날짜</th><th>공시 제목</th><th style="text-align:right">당일 변동률</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 
+// 시작
 renderButtons();
-selectStock('삼성전자');
+loadData().then(() => {
+  selectStock('삼성전자');
+}).catch(e => {
+  document.getElementById('chartContainer').innerHTML = `<div class="error">⚠ ${e.message}</div>`;
+});
 </script>
 </body>
 </html>
