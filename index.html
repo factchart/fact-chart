@@ -445,11 +445,11 @@ function externalTooltip(context, discMap, patternData, prices) {
   const my = window._mouseY || 0;
   const tw = tooltip.offsetWidth || 260;
   const th = tooltip.offsetHeight || 100;
-  let left = mx + 16;
+  let left = mx + 12;
   let top = my - th / 2 + window.scrollY;
-  if (left + tw > window.innerWidth - 8) left = mx - tw - 16;
-  if (top < window.scrollY + 8) top = window.scrollY + 8;
-  if (top + th > window.scrollY + window.innerHeight - 8) top = window.scrollY + window.innerHeight - th - 8;
+  if (left + tw > window.innerWidth - 4) left = mx - tw - 12;
+  if (top < window.scrollY + 4) top = window.scrollY + 4;
+  if (top + th > window.scrollY + window.innerHeight - 4) top = window.scrollY + window.innerHeight - th - 4;
   tooltip.style.left = left + 'px';
   tooltip.style.top = top + 'px';
 }
@@ -496,7 +496,22 @@ function renderTableRows(disclosures) {
 }
 
 // 마우스 위치 추적
-document.addEventListener('mousemove', e => { window._mouseX = e.clientX; window._mouseY = e.clientY; });
+document.addEventListener('mousemove', e => {
+  window._mouseX = e.clientX;
+  window._mouseY = e.clientY;
+  const tooltip = document.getElementById('customTooltip');
+  if (tooltip.style.display === 'block') {
+    const tw = tooltip.offsetWidth || 260;
+    const th = tooltip.offsetHeight || 100;
+    let left = e.clientX + 12;
+    let top = e.clientY - th / 2 + window.scrollY;
+    if (left + tw > window.innerWidth - 4) left = e.clientX - tw - 12;
+    if (top < window.scrollY + 4) top = window.scrollY + 4;
+    if (top + th > window.scrollY + window.innerHeight - 4) top = window.scrollY + window.innerHeight - th - 4;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+});
 
 // 시작
 renderButtons();
