@@ -514,7 +514,7 @@ document.addEventListener('mousemove', e => {
 });
 
 // 시작
-renderButtons();    
+renderButtons();
 fetch(DATA_URL)
   .then(r=>r.json())
   .then(data=>{ allData=data; selectStock('삼성전자'); })
