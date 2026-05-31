@@ -798,12 +798,6 @@ tr:hover td { background: rgba(255,255,255,0.015); }
         <div class="legend-line" style="background:#f5a623;height:2px;border-top:2px dashed #f5a623;background:transparent;"></div>
         유사 패턴 평균
       </div>
-      <div id="chartZoomHint" style="display:none;margin-left:auto;gap:14px;align-items:center;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a5568;letter-spacing:1px;">스크롤 패닝</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a5568;letter-spacing:1px;">Ctrl+스크롤 줌</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a5568;letter-spacing:1px;">드래그 이동</span>
-        <span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a5568;letter-spacing:1px;">더블클릭 리셋</span>
-      </div>
     </div>
   </div>
 
@@ -859,6 +853,22 @@ let allData = null;
 let patternOn = false;
 let selectedType = null;
 let activeTypeFilter = '전체';
+
+// 줌 상태 전역
+let _zoomMin = 0, _zoomMax = 0, _zoomTotal = 0;
+
+function _applyZoom() {
+  if (!chartInstance) return;
+  chartInstance.options.scales.x.min = _zoomMin;
+  chartInstance.options.scales.x.max = _zoomMax;
+  chartInstance.update('none');
+  const mw = document.getElementById('minimapWrap');
+  const mr = document.getElementById('minimapRange');
+  if (mw && mr && _zoomTotal > 1) {
+    mr.style.left = (_zoomMin / (_zoomTotal - 1) * 100) + '%';
+    mr.style.width = ((_zoomMax - _zoomMin) / (_zoomTotal - 1) * 100) + '%';
+  }
+}
 
 function renderButtons() {
   document.getElementById('stockBtns').innerHTML = STOCKS.map(s =>
@@ -1093,16 +1103,19 @@ function renderChart(prices, disclosures, patternData) {
   canvas.style.cursor = 'crosshair';
 
   const total = prices.length;
-  let zoomMin = 0, zoomMax = total - 1;
+  _zoomTotal = total;
+  _zoomMin = 0;
+  _zoomMax = total - 1;
 
-  function applyZoom() {
-    chartInstance.options.scales.x.min = zoomMin;
-    chartInstance.options.scales.x.max = zoomMax;
-    chartInstance.update('none');
-    updateMinimap();
-  }
-
+  function applyZoom() { _applyZoom(); }
   function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+  let zoomMin = _zoomMin, zoomMax = _zoomMax;
+
+  // zoomMin/zoomMax setter 래퍼
+  function setZoom(mn, mx) {
+    zoomMin = mn; zoomMax = mx;
+    _zoomMin = mn; _zoomMax = mx;
+  }
 
   const ctx = document.getElementById('myChart').getContext('2d');
   chartInstance = new Chart(ctx, {
@@ -1149,7 +1162,6 @@ function renderChart(prices, disclosures, patternData) {
     e.preventDefault();
     const range = zoomMax - zoomMin;
     if (e.ctrlKey || e.metaKey) {
-      // 줌: 커서 위치 기준으로 확대/축소
       const rect = canvas.getBoundingClientRect();
       const ratio = (e.clientX - rect.left) / rect.width;
       const center = Math.round(zoomMin + range * ratio);
@@ -1160,23 +1172,19 @@ function renderChart(prices, disclosures, patternData) {
       let newMax = newMin + newRange;
       if (newMin < 0) { newMin = 0; newMax = newRange; }
       if (newMax >= total) { newMax = total - 1; newMin = newMax - newRange; }
-      zoomMin = clamp(newMin, 0, total - 1);
-      zoomMax = clamp(newMax, 0, total - 1);
+      setZoom(clamp(newMin, 0, total-1), clamp(newMax, 0, total-1));
     } else {
-      // 패닝: 좌우 이동
       const step = Math.max(1, Math.round(range * 0.05));
       const dir = e.deltaY > 0 ? step : -step;
       let newMin = zoomMin + dir;
       let newMax = zoomMax + dir;
       if (newMin < 0) { newMin = 0; newMax = range; }
       if (newMax >= total) { newMax = total - 1; newMin = newMax - range; }
-      zoomMin = newMin;
-      zoomMax = newMax;
+      setZoom(newMin, newMax);
     }
     applyZoom();
   }, { passive: false });
 
-  // ── 드래그 패닝
   let dragStart = null, dragZoomMin = null, dragZoomMax = null;
   canvas.addEventListener('mousedown', e => {
     if (e.button !== 0) return;
@@ -1195,59 +1203,58 @@ function renderChart(prices, disclosures, patternData) {
     let newMax = dragZoomMax + delta;
     if (newMin < 0) { newMin = 0; newMax = range; }
     if (newMax >= total) { newMax = total - 1; newMin = newMax - range; }
-    zoomMin = newMin;
-    zoomMax = newMax;
+    setZoom(newMin, newMax);
     applyZoom();
   });
   document.addEventListener('mouseup', () => {
-    if (dragStart !== null) {
-      dragStart = null;
-      canvas.style.cursor = 'crosshair';
-    }
+    if (dragStart !== null) { dragStart = null; canvas.style.cursor = 'crosshair'; }
   });
 
-  // ── 더블클릭: 전체 보기 리셋
   canvas.addEventListener('dblclick', () => {
-    zoomMin = 0;
-    zoomMax = total - 1;
+    setZoom(0, total - 1);
     applyZoom();
   });
 
-  // ── 미니맵 슬라이더
-  const minimapWrap = document.createElement('div');
-  minimapWrap.id = 'minimapWrap';
-  minimapWrap.style.cssText = `
-    margin: 0 24px 16px;
-    height: 36px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid #1e2730;
-    border-radius: 2px;
-    position: relative;
-    cursor: pointer;
-    overflow: hidden;
-  `;
+  // ── 미니맵 슬라이더 (한 번만 생성)
+  let minimapWrap = document.getElementById('minimapWrap');
+  if (!minimapWrap) {
+    minimapWrap = document.createElement('div');
+    minimapWrap.id = 'minimapWrap';
+    minimapWrap.style.cssText = `
+      margin: 0 24px 16px;
+      height: 36px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid #1e2730;
+      border-radius: 2px;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    `;
 
-  // 미니맵 라인
-  const minimapCanvas = document.createElement('canvas');
-  minimapCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
-  minimapWrap.appendChild(minimapCanvas);
+    const minimapCanvas = document.createElement('canvas');
+    minimapCanvas.id = 'minimapCanvas';
+    minimapCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+    minimapWrap.appendChild(minimapCanvas);
 
-  // 선택 범위 핸들
-  const minimapRange = document.createElement('div');
-  minimapRange.style.cssText = `
-    position: absolute;
-    top: 0; bottom: 0;
-    background: rgba(0,229,160,0.12);
-    border-left: 2px solid #00e5a0;
-    border-right: 2px solid #00e5a0;
-    cursor: grab;
-    box-sizing: border-box;
-  `;
-  minimapWrap.appendChild(minimapRange);
+    const minimapRange = document.createElement('div');
+    minimapRange.id = 'minimapRange';
+    minimapRange.style.cssText = `
+      position: absolute;
+      top: 0; bottom: 0;
+      background: rgba(0,229,160,0.12);
+      border-left: 2px solid #00e5a0;
+      border-right: 2px solid #00e5a0;
+      cursor: grab;
+      box-sizing: border-box;
+    `;
+    minimapWrap.appendChild(minimapRange);
 
-  // 미니맵을 차트 body 아래에 삽입
-  const chartBody = document.querySelector('.chart-body');
-  chartBody.parentNode.insertBefore(minimapWrap, chartBody.nextSibling);
+    const chartBody = document.querySelector('.chart-body');
+    chartBody.parentNode.insertBefore(minimapWrap, chartBody.nextSibling);
+  }
+
+  const minimapCanvas = document.getElementById('minimapCanvas');
+  const minimapRange = document.getElementById('minimapRange');
 
   function drawMinimap() {
     const w = minimapWrap.offsetWidth;
@@ -1273,63 +1280,61 @@ function renderChart(prices, disclosures, patternData) {
   }
 
   function updateMinimap() {
-    const w = minimapWrap.offsetWidth;
     const left = (zoomMin / (total - 1)) * 100;
     const right = (zoomMax / (total - 1)) * 100;
     minimapRange.style.left = left + '%';
     minimapRange.style.width = (right - left) + '%';
   }
 
-  // 미니맵 드래그
-  let mmDrag = null;
-  minimapRange.addEventListener('mousedown', e => {
-    e.stopPropagation();
-    mmDrag = { startX: e.clientX, startMin: zoomMin, startMax: zoomMax, mode: 'pan' };
-    minimapRange.style.cursor = 'grabbing';
-  });
+  // 미니맵 이벤트는 한 번만 등록 (중복 방지)
+  if (!minimapWrap._eventsAttached) {
+    minimapWrap._eventsAttached = true;
 
-  minimapWrap.addEventListener('mousedown', e => {
-    if (mmDrag) return;
-    const rect = minimapWrap.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    const clickIdx = Math.round(ratio * (total - 1));
-    const range = zoomMax - zoomMin;
-    let newMin = Math.round(clickIdx - range / 2);
-    let newMax = newMin + range;
-    if (newMin < 0) { newMin = 0; newMax = range; }
-    if (newMax >= total) { newMax = total - 1; newMin = newMax - range; }
-    zoomMin = clamp(newMin, 0, total - 1);
-    zoomMax = clamp(newMax, 0, total - 1);
-    applyZoom();
-  });
+    let mmDrag = null;
+    minimapRange.addEventListener('mousedown', e => {
+      e.stopPropagation();
+      mmDrag = { startX: e.clientX, startMin: _zoomMin, startMax: _zoomMax };
+      minimapRange.style.cursor = 'grabbing';
+    });
 
-  document.addEventListener('mousemove', e => {
-    if (!mmDrag) return;
-    const rect = minimapWrap.getBoundingClientRect();
-    const delta = e.clientX - mmDrag.startX;
-    const range = mmDrag.startMax - mmDrag.startMin;
-    const barPx = rect.width / (total - 1);
-    const barDelta = Math.round(delta / barPx);
-    let newMin = mmDrag.startMin + barDelta;
-    let newMax = mmDrag.startMax + barDelta;
-    if (newMin < 0) { newMin = 0; newMax = range; }
-    if (newMax >= total) { newMax = total - 1; newMin = newMax - range; }
-    zoomMin = newMin;
-    zoomMax = newMax;
-    applyZoom();
-  });
+    minimapWrap.addEventListener('mousedown', e => {
+      if (mmDrag) return;
+      const rect = minimapWrap.getBoundingClientRect();
+      const ratio = (e.clientX - rect.left) / rect.width;
+      const clickIdx = Math.round(ratio * (_zoomTotal - 1));
+      const range = _zoomMax - _zoomMin;
+      let newMin = Math.round(clickIdx - range / 2);
+      let newMax = newMin + range;
+      if (newMin < 0) { newMin = 0; newMax = range; }
+      if (newMax >= _zoomTotal) { newMax = _zoomTotal - 1; newMin = newMax - range; }
+      _zoomMin = Math.max(0, newMin);
+      _zoomMax = Math.min(_zoomTotal - 1, newMax);
+      _applyZoom();
+    });
 
-  document.addEventListener('mouseup', () => {
-    if (mmDrag) { mmDrag = null; minimapRange.style.cursor = 'grab'; }
-  });
+    document.addEventListener('mousemove', e => {
+      if (!mmDrag) return;
+      const rect = minimapWrap.getBoundingClientRect();
+      const range = mmDrag.startMax - mmDrag.startMin;
+      const barPx = rect.width / (_zoomTotal - 1);
+      const barDelta = Math.round((e.clientX - mmDrag.startX) / barPx);
+      let newMin = mmDrag.startMin + barDelta;
+      let newMax = mmDrag.startMax + barDelta;
+      if (newMin < 0) { newMin = 0; newMax = range; }
+      if (newMax >= _zoomTotal) { newMax = _zoomTotal - 1; newMin = newMax - range; }
+      _zoomMin = newMin;
+      _zoomMax = newMax;
+      _applyZoom();
+    });
 
-  // 미니맵 초기 렌더
-  requestAnimationFrame(() => { drawMinimap(); updateMinimap(); });
-  window.addEventListener('resize', () => { drawMinimap(); updateMinimap(); });
+    document.addEventListener('mouseup', () => {
+      if (mmDrag) { mmDrag = null; minimapRange.style.cursor = 'grab'; }
+    });
 
-  // 힌트 레이블 업데이트
-  const hintEl = document.getElementById('chartZoomHint');
-  if (hintEl) hintEl.style.display = 'flex';
+    window.addEventListener('resize', () => { drawMinimap(); _applyZoom(); });
+  }
+
+  requestAnimationFrame(() => { drawMinimap(); _applyZoom(); });
 }
 
 function externalTooltip(context, discMap, patternData, prices) {
