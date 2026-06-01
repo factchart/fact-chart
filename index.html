@@ -67,9 +67,222 @@ body::after {
 .container {
   position: relative;
   z-index: 1;
-  max-width: 1280px;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 0 28px 60px;
+}
+
+/* ── 좌우 분할 레이아웃 ── */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+.left-col { min-width: 0; }
+
+.right-col {
+  position: sticky;
+  top: 20px;
+}
+
+/* ── 통계 패널 ── */
+.stats-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.stats-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.2);
+}
+
+.stats-panel-title {
+  font-family: var(--display);
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.stats-panel-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.stats-panel-body {
+  padding: 16px 20px;
+}
+
+/* 요약 지표 */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.summary-val {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.summary-val.up { color: var(--accent); }
+.summary-val.down { color: var(--red); }
+.summary-val.neutral { color: var(--gold); }
+
+.summary-lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* 유형별 바 */
+.type-stat-section {
+  margin-bottom: 20px;
+}
+
+.type-stat-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.type-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.type-stat-name {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  width: 64px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.type-stat-track {
+  flex: 1;
+  height: 22px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.type-stat-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  min-width: 44px;
+  white-space: nowrap;
+}
+
+.type-stat-fill.up {
+  background: rgba(0,229,160,0.12);
+  color: var(--accent);
+  border-left: 2px solid var(--accent);
+}
+
+.type-stat-fill.down {
+  background: rgba(255,77,109,0.12);
+  color: var(--red);
+  border-left: 2px solid var(--red);
+}
+
+.type-stat-count {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text3);
+  width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* 상승/하락 분포 */
+.dist-section { margin-bottom: 8px; }
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dist-name {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text2);
+  width: 64px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.dist-bar {
+  flex: 1;
+  height: 18px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  display: flex;
+}
+
+.dist-up {
+  background: rgba(0,229,160,0.18);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--accent);
+}
+
+.dist-down {
+  background: rgba(255,77,109,0.18);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--red);
+}
+
+.stats-empty {
+  text-align: center;
+  padding: 40px 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 2px;
 }
 
 /* ── 헤더 ── */
@@ -741,77 +954,100 @@ tr:hover td { background: rgba(255,255,255,0.015); }
     <div class="stock-grid" id="stockBtns"></div>
   </div>
 
-  <!-- 차트 패널 -->
-  <div class="chart-panel">
-    <div class="chart-panel-header">
-      <div class="chart-stock-info">
-        <div class="chart-stock-name" id="currentStockName">—</div>
-      </div>
-      <div class="price-block">
-        <div class="price-value" id="latestPrice">—</div>
-        <div class="price-change" id="priceChange">—</div>
-      </div>
-    </div>
+  <!-- 좌우 분할 레이아웃 -->
+  <div class="main-layout">
 
-    <!-- 패턴 토글 -->
-    <div class="pattern-bar">
-      <div class="toggle-wrap">
-        <label class="toggle-switch">
-          <input type="checkbox" id="patternToggle" onchange="togglePattern()">
-          <span class="toggle-slider"></span>
-        </label>
-        <span class="toggle-label" id="toggleLabel">유사 패턴 오버랩</span>
+    <!-- 왼쪽: 차트 + 공시이력 -->
+    <div class="left-col">
+
+      <!-- 차트 패널 -->
+      <div class="chart-panel">
+        <div class="chart-panel-header">
+          <div class="chart-stock-info">
+            <div class="chart-stock-name" id="currentStockName">—</div>
+          </div>
+          <div class="price-block">
+            <div class="price-value" id="latestPrice">—</div>
+            <div class="price-change" id="priceChange">—</div>
+          </div>
+        </div>
+
+        <!-- 패턴 토글 -->
+        <div class="pattern-bar">
+          <div class="toggle-wrap">
+            <label class="toggle-switch">
+              <input type="checkbox" id="patternToggle" onchange="togglePattern()">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label" id="toggleLabel">유사 패턴 오버랩</span>
+          </div>
+          <span class="pattern-info" id="patternInfo"></span>
+        </div>
+
+        <!-- 유형 선택 -->
+        <div class="type-select-wrap" id="patternSelectWrap">
+          <span class="type-label-small">공시 유형</span>
+        </div>
+
+        <!-- 통계 바 -->
+        <div class="stats-bar" id="patternStats">
+          <div class="stat-pill"><span class="stat-pill-label">사례 수</span><span class="stat-pill-val neutral" id="statCount">—</span></div>
+          <div class="stat-pill"><span class="stat-pill-label">평균 변동</span><span class="stat-pill-val" id="statAvg">—</span></div>
+          <div class="stat-pill"><span class="stat-pill-label">상승 확률</span><span class="stat-pill-val neutral" id="statUp">—</span></div>
+          <div class="stat-pill"><span class="stat-pill-label">최대 상승</span><span class="stat-pill-val up" id="statMax">—</span></div>
+          <div class="stat-pill"><span class="stat-pill-label">최대 하락</span><span class="stat-pill-val down" id="statMin">—</span></div>
+        </div>
+
+        <!-- 차트 -->
+        <div class="chart-body">
+          <div id="chartContainer"><div class="loading">종목을 선택하세요</div></div>
+        </div>
+
+        <!-- 범례 -->
+        <div class="chart-legend">
+          <div class="legend-item">
+            <div class="legend-line" style="background:#00e5a0"></div>
+            종가
+          </div>
+          <div class="legend-item">
+            <div class="legend-diamond" style="background:#ff4d6d"></div>
+            공시 발생일
+          </div>
+          <div class="legend-item" id="legendPattern" style="display:none">
+            <div class="legend-line" style="background:#f5a623;height:2px;border-top:2px dashed #f5a623;background:transparent;"></div>
+            유사 패턴 평균
+          </div>
+        </div>
       </div>
-      <span class="pattern-info" id="patternInfo"></span>
-    </div>
 
-    <!-- 유형 선택 -->
-    <div class="type-select-wrap" id="patternSelectWrap">
-      <span class="type-label-small">공시 유형</span>
-    </div>
-
-    <!-- 통계 바 -->
-    <div class="stats-bar" id="patternStats">
-      <div class="stat-pill"><span class="stat-pill-label">사례 수</span><span class="stat-pill-val neutral" id="statCount">—</span></div>
-      <div class="stat-pill"><span class="stat-pill-label">평균 변동</span><span class="stat-pill-val" id="statAvg">—</span></div>
-      <div class="stat-pill"><span class="stat-pill-label">상승 확률</span><span class="stat-pill-val neutral" id="statUp">—</span></div>
-      <div class="stat-pill"><span class="stat-pill-label">최대 상승</span><span class="stat-pill-val up" id="statMax">—</span></div>
-      <div class="stat-pill"><span class="stat-pill-label">최대 하락</span><span class="stat-pill-val down" id="statMin">—</span></div>
-    </div>
-
-    <!-- 차트 -->
-    <div class="chart-body">
-      <div id="chartContainer"><div class="loading">종목을 선택하세요</div></div>
-    </div>
-
-    <!-- 범례 -->
-    <div class="chart-legend">
-      <div class="legend-item">
-        <div class="legend-line" style="background:#00e5a0"></div>
-        종가
+      <!-- 공시 이력 -->
+      <div class="table-panel" style="margin-top:16px;">
+        <div class="table-panel-header">
+          <div class="table-title">공시 이력</div>
+          <div class="filter-wrap" id="typeFilterWrap"></div>
+          <div class="table-count" id="disclosureCount">—</div>
+        </div>
+        <div class="table-wrap">
+          <div id="tableContainer"><div class="loading">종목을 선택하세요</div></div>
+        </div>
       </div>
-      <div class="legend-item">
-        <div class="legend-diamond" style="background:#ff4d6d"></div>
-        공시 발생일
-      </div>
-      <div class="legend-item" id="legendPattern" style="display:none">
-        <div class="legend-line" style="background:#f5a623;height:2px;border-top:2px dashed #f5a623;background:transparent;"></div>
-        유사 패턴 평균
-      </div>
-    </div>
-  </div>
 
-  <!-- 공시 이력 -->
-  <div class="table-panel">
-    <div class="table-panel-header">
-      <div class="table-title">공시 이력</div>
-      <div class="filter-wrap" id="typeFilterWrap"></div>
-      <div class="table-count" id="disclosureCount">—</div>
-    </div>
-    <div class="table-wrap">
-      <div id="tableContainer"><div class="loading">종목을 선택하세요</div></div>
-    </div>
-  </div>
+    </div><!-- /left-col -->
+
+    <!-- 오른쪽: 통계 분석 패널 -->
+    <div class="right-col">
+      <div class="stats-panel">
+        <div class="stats-panel-header">
+          <div class="stats-panel-title">통계 분석</div>
+          <div class="stats-panel-sub" id="statsPanelSub">종목을 선택하세요</div>
+        </div>
+        <div class="stats-panel-body" id="statsPanelBody">
+          <div class="stats-empty">종목 선택 시<br>통계가 표시됩니다</div>
+        </div>
+      </div>
+    </div><!-- /right-col -->
+
+  </div><!-- /main-layout -->
 
 </div>
 
@@ -832,7 +1068,7 @@ tr:hover td { background: rgba(255,255,255,0.015); }
 
 <script>
 const STOCKS = ['삼성전자','SK하이닉스','현대차','카카오','NAVER','LG에너지솔루션','한화에어로스페이스','KB금융','HD현대','두산에너빌리티'];
-const DATA_URL = 'https://script.google.com/macros/s/AKfycbwdqIFsqFaI3cQMlFDY4k33clXvtacqnGuyyTM2K1nK2VuFHxr1Waj3XwaQQGYjNWI/exec';
+const DATA_URL = 'stock_data.json';
 
 const TYPE_COLORS = {
   '실적발표': '#4d9fff',
@@ -915,6 +1151,7 @@ function selectStock(name) {
   renderChart(prices, disclosures, null);
   renderTable(disclosures);
   renderTypeFilter(disclosures);
+  renderStatsPanel(disclosures);
 }
 
 function togglePattern() {
@@ -1368,8 +1605,9 @@ function externalTooltip(context, discMap, patternData, prices) {
   if (patternData && prices) {
     const idx = prices.findIndex(p=>p.date===date);
     const patVal = idx>=0 ? patternData[idx] : null;
-    if (patVal !== null) {
-      const diff = ((price-patVal)/patVal*100).toFixed(2);
+    const priceNum = parseFloat(price);
+    if (patVal !== null && patVal > 0 && !isNaN(priceNum)) {
+      const diff = ((priceNum - patVal) / patVal * 100).toFixed(2);
       const el = document.getElementById('ttPatternVal');
       el.textContent = `패턴 대비 ${diff>=0?'+':''}${diff}% 괴리`;
       el.style.color = Math.abs(diff)>3?'#f5a623':diff>=0?'#00e5a0':'#ff4d6d';
@@ -1380,7 +1618,104 @@ function externalTooltip(context, discMap, patternData, prices) {
   tooltip.style.display='block';
 }
 
-function renderTypeFilter(disclosures) {
+function renderStatsPanel(disclosures) {
+  const body = document.getElementById('statsPanelBody');
+  const sub = document.getElementById('statsPanelSub');
+
+  if (!disclosures || disclosures.length === 0) {
+    body.innerHTML = '<div class="stats-empty">공시 데이터 없음</div>';
+    return;
+  }
+
+  sub.textContent = currentStock + ' — ' + disclosures.length + '건 분석';
+
+  // 유형별 통계 계산
+  const typeStats = {};
+  disclosures.forEach(function(d) {
+    const raw = String(d.change).replace('%','').trim();
+    const v = parseFloat(raw);
+    const pct = isNaN(v) ? null : (Math.abs(v) < 1 ? v * 100 : v);
+    if (!typeStats[d.type]) typeStats[d.type] = { sum: 0, count: 0, up: 0, vals: [] };
+    if (pct !== null) {
+      typeStats[d.type].sum += pct;
+      typeStats[d.type].count++;
+      typeStats[d.type].vals.push(pct);
+      if (pct >= 0) typeStats[d.type].up++;
+    }
+  });
+
+  // 전체 요약
+  const allVals = disclosures.map(function(d) {
+    const raw = String(d.change).replace('%','').trim();
+    const v = parseFloat(raw);
+    return isNaN(v) ? null : (Math.abs(v) < 1 ? v * 100 : v);
+  }).filter(function(v) { return v !== null; });
+
+  const totalAvg = allVals.length ? (allVals.reduce(function(a,b){return a+b;},0) / allVals.length) : 0;
+  const totalUp = allVals.filter(function(v){return v>=0;}).length;
+  const upRate = allVals.length ? Math.round(totalUp / allVals.length * 100) : 0;
+  const maxVal = allVals.length ? Math.max(...allVals) : 0;
+  const minVal = allVals.length ? Math.min(...allVals) : 0;
+
+  // 유형 정렬 (평균 내림차순)
+  const types = Object.keys(typeStats).sort(function(a,b) {
+    const avgA = typeStats[a].count ? typeStats[a].sum / typeStats[a].count : 0;
+    const avgB = typeStats[b].count ? typeStats[b].sum / typeStats[b].count : 0;
+    return avgB - avgA;
+  });
+
+  // 최대 절댓값 (바 너비 계산용)
+  const maxAbs = Math.max(...types.map(function(t) {
+    return typeStats[t].count ? Math.abs(typeStats[t].sum / typeStats[t].count) : 0;
+  }), 1);
+
+  let html = '';
+
+  // 요약 지표
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-card"><div class="summary-val neutral">' + disclosures.length + '</div><div class="summary-lbl">총 공시</div></div>';
+  html += '<div class="summary-card"><div class="summary-val ' + (totalAvg >= 0 ? 'up' : 'down') + '">' + (totalAvg >= 0 ? '+' : '') + totalAvg.toFixed(2) + '%</div><div class="summary-lbl">평균 수익률</div></div>';
+  html += '<div class="summary-card"><div class="summary-val neutral">' + upRate + '%</div><div class="summary-lbl">상승 확률</div></div>';
+  html += '<div class="summary-card"><div class="summary-val up">+' + maxVal.toFixed(2) + '%</div><div class="summary-lbl">최고 반응</div></div>';
+  html += '</div>';
+
+  // 유형별 평균 수익률
+  html += '<div class="type-stat-section">';
+  html += '<div class="type-stat-label">유형별 평균 수익률</div>';
+  types.forEach(function(t) {
+    const s = typeStats[t];
+    if (!s.count) return;
+    const avg = s.sum / s.count;
+    const width = Math.round(Math.abs(avg) / maxAbs * 100);
+    const cls = avg >= 0 ? 'up' : 'down';
+    const sign = avg >= 0 ? '+' : '';
+    html += '<div class="type-stat-row">';
+    html += '<div class="type-stat-name">' + t + '</div>';
+    html += '<div class="type-stat-track"><div class="type-stat-fill ' + cls + '" style="width:' + Math.max(width, 20) + '%">' + sign + avg.toFixed(2) + '%</div></div>';
+    html += '<div class="type-stat-count">' + s.count + '건</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // 상승/하락 분포
+  html += '<div class="dist-section">';
+  html += '<div class="type-stat-label">상승 / 하락 분포</div>';
+  types.forEach(function(t) {
+    const s = typeStats[t];
+    if (!s.count) return;
+    const upPct = Math.round(s.up / s.count * 100);
+    const downPct = 100 - upPct;
+    html += '<div class="dist-row">';
+    html += '<div class="dist-name">' + t + '</div>';
+    html += '<div class="dist-bar">';
+    html += '<div class="dist-up" style="width:' + upPct + '%">' + upPct + '%</div>';
+    html += '<div class="dist-down" style="width:' + downPct + '%">' + downPct + '%</div>';
+    html += '</div></div>';
+  });
+  html += '</div>';
+
+  body.innerHTML = html;
+}
   const types = ['전체', ...new Set(disclosures.map(d=>d.type).filter(Boolean))];
   document.getElementById('typeFilterWrap').innerHTML = types.map(t=>
     `<button class="filter-btn ${t===activeTypeFilter?'active':''}" onclick="filterByType('${t}')">${t}</button>`
