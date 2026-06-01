@@ -206,13 +206,52 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.stock-info-left { display: flex; flex-direction: column; gap: 6px; }
+
 .chart-stock-name {
   font-family: var(--sans);
-  font-size: 26px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 800;
   color: var(--text);
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   line-height: 1;
+}
+
+.stock-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stock-sector {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(0,208,132,0.1);
+  border: 1px solid rgba(0,208,132,0.25);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.stock-desc {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text2);
+}
+
+.stock-ticker {
+  font-family: var(--num);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+}
+
+.stock-sep {
+  color: var(--text3);
+  font-size: 12px;
 }
 
 .price-block { text-align: right; }
@@ -773,6 +812,18 @@ tbody td {
   font-weight: 500;
 }
 
+@keyframes rowPulse {
+  0%   { box-shadow: inset 0 0 0 2px rgba(0,229,160,0); background: transparent; }
+  20%  { box-shadow: inset 0 0 0 2px rgba(0,229,160,0.8); background: rgba(0,229,160,0.08); }
+  50%  { box-shadow: inset 0 0 0 2px rgba(0,229,160,0.4); background: rgba(0,229,160,0.04); }
+  70%  { box-shadow: inset 0 0 0 2px rgba(0,229,160,0.7); background: rgba(0,229,160,0.07); }
+  100% { box-shadow: inset 0 0 0 2px rgba(0,229,160,0); background: transparent; }
+}
+
+tr.disc-highlight {
+  animation: rowPulse 1.8s ease-in-out 2;
+}
+
 .loading::after {
   content: '';
   display: block;
@@ -820,6 +871,19 @@ tbody td {
   margin-bottom: 4px;
 }
 
+.tt-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tt-day-change {
+  font-family: var(--num);
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .tt-price {
   font-family: var(--num);
   font-size: 26px;
@@ -827,7 +891,6 @@ tbody td {
   color: var(--text);
   letter-spacing: -1px;
   line-height: 1;
-  margin-bottom: 8px;
 }
 
 .tt-disc {
@@ -925,7 +988,16 @@ tbody td {
       <!-- 차트 패널 -->
       <div class="chart-panel">
         <div class="chart-panel-header">
-          <div class="chart-stock-name" id="currentStockName">—</div>
+          <div class="stock-info-left">
+            <div class="chart-stock-name" id="currentStockName">—</div>
+            <div class="stock-meta" id="stockMeta">
+              <span class="stock-sector" id="stockSector">—</span>
+              <span class="stock-sep">·</span>
+              <span class="stock-desc" id="stockDesc">—</span>
+              <span class="stock-sep">·</span>
+              <span class="stock-ticker" id="stockTicker">—</span>
+            </div>
+          </div>
           <div class="price-block">
             <div class="price-value" id="latestPrice">—</div>
             <div class="price-change" id="priceChange">—</div>
@@ -961,7 +1033,7 @@ tbody td {
 
         <div class="chart-legend">
           <div class="legend-item">
-            <div class="legend-line" style="background:#4fc3f7"></div>종가
+            <div class="legend-line" style="background:#00e5a0"></div>종가
           </div>
           <div class="legend-item">
             <div class="legend-diamond" style="background:#e53e3e"></div>공시 발생일
@@ -1005,7 +1077,10 @@ tbody td {
 <!-- 툴팁 -->
 <div class="custom-tooltip" id="customTooltip">
   <div class="tt-date" id="ttDate"></div>
-  <div class="tt-price" id="ttPrice"></div>
+  <div class="tt-price-row">
+    <div class="tt-price" id="ttPrice"></div>
+    <div class="tt-day-change" id="ttDayChange"></div>
+  </div>
   <div class="tt-disc" id="ttDisclosure" style="display:none">
     <div class="tt-disc-label">공시 발생</div>
     <div class="tt-disc-title" id="ttDiscTitle"></div>
@@ -1018,6 +1093,20 @@ tbody td {
 </div>
 
 <script>
+
+const STOCK_META = {
+  '삼성전자':       { sector:'반도체·전자',   desc:'글로벌 메모리·파운드리', ticker:'005930' },
+  'SK하이닉스':     { sector:'반도체',        desc:'HBM·DRAM 세계 2위',     ticker:'000660' },
+  '현대차':         { sector:'자동차',        desc:'완성차·EV·수소',         ticker:'005380' },
+  '카카오':         { sector:'IT·플랫폼',     desc:'메신저·콘텐츠·금융',     ticker:'035720' },
+  'NAVER':          { sector:'IT·플랫폼',     desc:'검색·커머스·AI',         ticker:'035420' },
+  'LG에너지솔루션': { sector:'2차전지',       desc:'EV배터리 세계 2위',      ticker:'373220' },
+  '한화에어로스페이스': { sector:'방산·항공', desc:'엔진·우주·K-방산',       ticker:'012450' },
+  'KB금융':         { sector:'금융',          desc:'국내 1위 금융그룹',      ticker:'105560' },
+  'HD현대':         { sector:'조선·에너지',   desc:'세계 1위 조선그룹',      ticker:'267250' },
+  '두산에너빌리티': { sector:'원전·에너지',   desc:'SMR·원전 핵심설비',      ticker:'034020' },
+};
+
 const STOCKS = ['삼성전자','SK하이닉스','현대차','카카오','NAVER','LG에너지솔루션','한화에어로스페이스','KB금융','HD현대','두산에너빌리티'];
 const DATA_URL = 'stock_data.json';
 
@@ -1074,6 +1163,10 @@ function selectStock(name) {
 
   renderButtons();
   document.getElementById('currentStockName').textContent = name;
+  const meta = STOCK_META[name] || {};
+  document.getElementById('stockSector').textContent = meta.sector || '—';
+  document.getElementById('stockDesc').textContent = meta.desc || '—';
+  document.getElementById('stockTicker').textContent = meta.ticker ? meta.ticker + '.KS' : '—';
 
   const prices = (allData.prices[name]||[]).map(p=>({date:p[0],price:p[1]}));
   const disclosures = allData.disclosures.filter(d=>d.name===name);
@@ -1102,6 +1195,15 @@ function selectStock(name) {
   renderTable(disclosures);
   renderTypeFilter(disclosures);
   renderStatsPanel(disclosures);
+
+  // 첫 번째 유형 자동 선택 및 패턴 적용
+  if (types.length > 0) {
+    selectedType = types[0];
+    document.querySelectorAll('.type-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent === selectedType);
+    });
+    applyPattern();
+  }
 }
 
 function togglePattern() {
@@ -1219,19 +1321,19 @@ function renderChart(prices, disclosures, patternData) {
     {
       label:'종가',
       data:prices.map(p=>p.price),
-      borderColor:'#4fc3f7',
+      borderColor:'#00e5a0',
       borderWidth:1.5,
       pointRadius:0,
       pointHoverRadius:5,
-      pointHoverBackgroundColor:'#4fc3f7',
+      pointHoverBackgroundColor:'#00e5a0',
       pointHoverBorderColor:'#07090d',
       pointHoverBorderWidth:2,
       fill:true,
       backgroundColor: ctx=>{
         const g=ctx.chart.ctx.createLinearGradient(0,0,0,440);
-        g.addColorStop(0,'rgba(79,195,247,0.1)');
-        g.addColorStop(0.6,'rgba(79,195,247,0.02)');
-        g.addColorStop(1,'rgba(79,195,247,0)');
+        g.addColorStop(0,'rgba(0,229,160,0.12)');
+        g.addColorStop(0.6,'rgba(0,229,160,0.02)');
+        g.addColorStop(1,'rgba(0,229,160,0)');
         return g;
       },
       tension:0.3, order:2
@@ -1339,6 +1441,31 @@ function renderChart(prices, disclosures, patternData) {
     chartInstance.draw();
   });
 
+  canvas.addEventListener('click', e => {
+    const pts = chartInstance.getElementsAtEventForMode(e, 'index', {intersect:false}, true);
+    if (!pts.length) return;
+    const idx = pts[0].index;
+    const clickedDate = prices[idx]?.date;
+    if (!clickedDate || !discMap[clickedDate]) return;
+    // 테이블 패널로 스크롤
+    const tablePanel = document.querySelector('.table-panel');
+    if (tablePanel) tablePanel.scrollIntoView({behavior:'smooth', block:'start'});
+    // 해당 날짜 행 하이라이트
+    setTimeout(() => {
+      const rows = document.querySelectorAll('#tableContainer tbody tr');
+      rows.forEach(row => {
+        const dateCell = row.querySelector('.td-date');
+        if (dateCell && dateCell.textContent.trim() === clickedDate) {
+          row.classList.remove('disc-highlight');
+          void row.offsetWidth; // reflow
+          row.classList.add('disc-highlight');
+          row.scrollIntoView({behavior:'smooth', block:'center'});
+          setTimeout(() => row.classList.remove('disc-highlight'), 4000);
+        }
+      });
+    }, 400);
+  });
+
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const range = zoomMax - zoomMin;
@@ -1421,7 +1548,7 @@ function renderChart(prices, disclosures, patternData) {
       const x = i*scaleX, y = h-2-(v-minV)*scaleY;
       i===0?mctx.moveTo(x,y):mctx.lineTo(x,y);
     });
-    mctx.strokeStyle = 'rgba(79,195,247,0.4)';
+    mctx.strokeStyle = 'rgba(0,229,160,0.4)';
     mctx.lineWidth = 1;
     mctx.stroke();
   }
@@ -1476,6 +1603,19 @@ function externalTooltip(context, discMap, patternData, prices) {
 
   document.getElementById('ttDate').textContent = date;
   document.getElementById('ttPrice').textContent = Math.round(priceNum).toLocaleString('ko-KR')+'원';
+
+  // 전날 대비 등락률
+  const dayChangeEl = document.getElementById('ttDayChange');
+  const pidx = prices.findIndex(p=>p.date===date);
+  if (pidx > 0 && !isNaN(priceNum)) {
+    const prevPrice = prices[pidx-1].price;
+    const dayChg = ((priceNum - prevPrice) / prevPrice * 100);
+    const dayChgStr = (dayChg>=0?'▲ +':'▼ ') + Math.abs(dayChg).toFixed(2) + '%';
+    dayChangeEl.textContent = dayChgStr;
+    dayChangeEl.style.color = dayChg>=0?'#e53e3e':'#3182ce';
+  } else {
+    dayChangeEl.textContent = '';
+  }
 
   const discDiv = document.getElementById('ttDisclosure');
   if (discMap[date]?.length>0) {
