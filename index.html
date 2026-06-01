@@ -1580,9 +1580,11 @@ function externalTooltip(context, discMap, patternData, prices) {
   if (tt.opacity===0) { tooltip.style.display='none'; return; }
 
   const date = tt.dataPoints?.[0]?.label;
-  const price = tt.dataPoints?.[0]?.raw;
+  const pricePoint = tt.dataPoints?.find(p => p.datasetIndex === 0);
+  const price = pricePoint?.raw ?? tt.dataPoints?.[0]?.raw;
+  const priceNum = parseFloat(price);
   document.getElementById('ttDate').textContent = date;
-  document.getElementById('ttPrice').textContent = Number(price).toLocaleString('ko-KR')+'원';
+  document.getElementById('ttPrice').textContent = Math.round(priceNum).toLocaleString('ko-KR')+'원';
 
   const discDiv = document.getElementById('ttDisclosure');
   if (discMap[date]?.length>0) {
@@ -1605,7 +1607,6 @@ function externalTooltip(context, discMap, patternData, prices) {
   if (patternData && prices) {
     const idx = prices.findIndex(p=>p.date===date);
     const patVal = idx>=0 ? patternData[idx] : null;
-    const priceNum = parseFloat(price);
     if (patVal !== null && patVal > 0 && !isNaN(priceNum)) {
       const diff = ((priceNum - patVal) / patVal * 100).toFixed(2);
       const el = document.getElementById('ttPatternVal');
