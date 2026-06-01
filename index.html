@@ -1716,6 +1716,8 @@ function renderStatsPanel(disclosures) {
 
   body.innerHTML = html;
 }
+
+function renderTypeFilter(disclosures) {
   const types = ['전체', ...new Set(disclosures.map(d=>d.type).filter(Boolean))];
   document.getElementById('typeFilterWrap').innerHTML = types.map(t=>
     `<button class="filter-btn ${t===activeTypeFilter?'active':''}" onclick="filterByType('${t}')">${t}</button>`
