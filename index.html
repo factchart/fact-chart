@@ -192,81 +192,83 @@ body {
 /* ── 종목 선택 ── */
 .stock-section { margin-bottom: 12px; }
 
-.section-label {
-  font-family: var(--sans);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  flex-shrink: 0;
-}
-
-.stock-section-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-  gap: 12px;
-}
-
+/* 종목 선택 한 줄 */
 .stock-row {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-wrap: nowrap;
+  gap: 0;
+  position: relative;
+}
+
+/* 버튼 스크롤 영역 */
+.stock-grid-wrap {
+  flex: 1;
+  min-width: 0;
   position: relative;
 }
 
 .stock-row .stock-grid {
-  flex: 1;
+  display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  overflow-y: hidden;
-  gap: 4px;
+  overflow-y: visible;
+  gap: 5px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
-  padding: 1px 0;
+  padding: 2px 0;
 }
 
 .stock-row .stock-grid::-webkit-scrollbar { display: none; }
 
-.stock-row .stock-search-wrap {
-  flex-shrink: 0;
-  margin-left: 16px;
+/* › 화살표 — 버튼 영역 우측 끝 오버레이 */
+.scroll-arrow-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 52px;
+  background: linear-gradient(to right, transparent, var(--bg) 50%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 20;
 }
 
-/* 스크롤 화살표 */
-.scroll-arrow {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+.stock-row:hover .scroll-arrow-right:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-arrow-right.hidden { display: none; }
+
+.arrow-btn {
+  width: 26px;
+  height: 26px;
   background: var(--card);
   border: 1px solid var(--border2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text2);
-  opacity: 0;
-  transition: opacity 0.2s, background 0.15s;
-  z-index: 10;
-  user-select: none;
-  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
 }
 
-.scroll-arrow:hover { background: var(--surface); color: var(--accent); }
-.stock-row:hover .scroll-arrow { opacity: 1; }
-.scroll-arrow.hidden { opacity: 0 !important; pointer-events: none !important; width: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; }
+.arrow-btn:hover { background: var(--surface); color: var(--accent); }
 
-
-
+/* 검색바 — 절대 줄어들지 않음 */
 .stock-search-wrap {
   position: relative;
   flex-shrink: 0;
+  margin-left: 16px;
 }
 
 .stock-search {
@@ -352,6 +354,7 @@ body {
   transition: all 0.15s;
   white-space: nowrap;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .stock-btn:hover {
@@ -1377,7 +1380,6 @@ tr.disc-highlight {
             <span class="stock-search-icon">⌕</span>
             <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
           </div>
-          </div>
         </div>
       </div>
 
@@ -1587,8 +1589,13 @@ function updateArrows() {
   const grid = document.getElementById('stockBtns');
   const R = document.getElementById('arrowRight');
   if (!grid || !R) return;
+  const canScroll = grid.scrollWidth > grid.clientWidth + 2;
   const atEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2;
-  R.classList.toggle('hidden', atEnd);
+  if (!canScroll || atEnd) {
+    R.classList.add('hidden');
+  } else {
+    R.classList.remove('hidden');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
