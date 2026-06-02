@@ -1336,19 +1336,12 @@ function selectStock(name) {
   renderTypeFilter(disclosures);
   renderStatsPanel(disclosures);
 
-  // 괴리율(변동률 절대값 평균) 최대 유형 자동 선택
+  // 사례수 최다 유형 자동 선택
   if (types.length > 0) {
-    let bestType = types[0], bestAvgAbs = -1;
+    let bestType = types[0], bestCount = -1;
     types.forEach(t => {
-      const tDiscs = disclosures.filter(d => d.type === t);
-      const vals = tDiscs.map(d => {
-        const raw = String(d.change).replace('%','').trim();
-        const v = parseFloat(raw);
-        return isNaN(v) ? null : Math.abs(Math.abs(v) < 1 ? v * 100 : v);
-      }).filter(v => v !== null);
-      if (vals.length === 0) return;
-      const avg = vals.reduce((a,b)=>a+b,0) / vals.length;
-      if (avg > bestAvgAbs) { bestAvgAbs = avg; bestType = t; }
+      const cnt = disclosures.filter(d => d.type === t).length;
+      if (cnt > bestCount) { bestCount = cnt; bestType = t; }
     });
     selectedType = bestType;
     document.querySelectorAll('.type-btn').forEach(b => {
