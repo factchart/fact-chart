@@ -1389,6 +1389,9 @@ tr.disc-highlight {
 ══════════════════════════════════════════ */
 @media (max-width: 768px) {
   .container { padding: 0 12px 48px; }
+  html, body { overflow-x: hidden; max-width: 100vw; }
+  * { min-width: 0; }
+  .chart-panel, .table-panel, .stats-panel, .impact-banner { max-width: 100%; }
 
   /* ── 헤더 ── */
   .header { padding: 10px 0 8px; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
@@ -1431,20 +1434,14 @@ tr.disc-highlight {
   .stock-search { width: 110px; font-size: 12px; padding: 7px 26px 7px 9px; }
   .stock-search-wrap { margin-left: 8px; }
 
-  /* ── 레이아웃: 통계분석 위, 공시이력 아래 ── */
+  /* ── 레이아웃 1컬럼 ── */
   .main-layout {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    display: flex;
-    flex-direction: column;
+    display: block;
   }
 
-  /* 5. 모바일에서 순서: left-col 먼저, right-col 나중 */
-  .left-col { order: 1; }
-  .right-col { order: 2; position: static; }
+  .right-col { position: static; width: 100%; }
 
-  /* 차트 패널 내부에서 통계(right-col)를 차트 바로 아래로 올리기 위해
-     실제로는 right-col을 left-col 안 chart-panel 직후에 배치하는 CSS order 트릭 */
+  /* 모바일: right-col을 차트 아래 공시이력 위에 JS로 이동 */
 
   /* ── 2. 모바일 차트헤더: 종목명 + 국내정규장 옆에 ── */
   .chart-panel-header {
@@ -2870,6 +2867,30 @@ fetch(DATA_URL)
   });
 
 function initMarketStatus() {
+  // 모바일에서 통계패널을 공시이력 위로 이동
+  function repositionStatPanel() {
+    const rightCol = document.querySelector('.right-col');
+    const leftCol = document.querySelector('.left-col');
+    const tickerBar = document.getElementById('tickerBar');
+    if (!rightCol || !leftCol || !tickerBar) return;
+    if (window.innerWidth <= 768) {
+      // tickerBar 앞에 삽입 (차트 아래, 공시이력 위)
+      if (rightCol.parentElement !== leftCol) {
+        leftCol.insertBefore(rightCol, tickerBar);
+        rightCol.style.marginBottom = '10px';
+      }
+    } else {
+      // 데스크톱: main-layout 안으로 복원
+      const mainLayout = document.querySelector('.main-layout');
+      if (rightCol.parentElement !== mainLayout) {
+        mainLayout.appendChild(rightCol);
+        rightCol.style.marginBottom = '';
+      }
+    }
+  }
+  repositionStatPanel();
+  window.addEventListener('resize', repositionStatPanel);
+
   // 모바일에서 market-status를 종목명 옆으로 이동
   function positionMarketBadge() {
     const ms = document.getElementById('marketStatus');
