@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#080b10"/>
+      <stop offset="100%" style="stop-color:#0e1420"/>
+    </linearGradient>
+    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d084;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#00d084;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 그리드 라인 -->
+  <line x1="0" y1="157" x2="1200" y2="157" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="0" y1="472" x2="1200" y2="472" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="300" y1="0" x2="300" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+  <line x1="900" y1="0" x2="900" y2="630" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+  <!-- 상단 accent 라인 -->
+  <rect x="0" y="0" width="1200" height="3" fill="#00d084"/>
+
+  <!-- 배경 차트 (장식) -->
+  <polyline
+    points="0,480 80,460 160,440 240,420 320,400 400,370 480,340 560,310 620,280 680,260 740,240 800,210 860,190 920,200 960,180 1000,150 1060,120 1120,100 1200,80"
+    fill="none" stroke="#00d084" stroke-width="2" opacity="0.15"/>
+
+  <!-- 차트 fill -->
+  <polygon
+    points="0,480 80,460 160,440 240,420 320,400 400,370 480,340 560,310 620,280 680,260 740,240 800,210 860,190 920,200 960,180 1000,150 1060,120 1120,100 1200,80 1200,630 0,630"
+    fill="url(#chartGrad)" opacity="0.4"/>
+
+  <!-- 공시 마커 (다이아몬드) -->
+  <g fill="#e53e3e" opacity="0.7">
+    <rect x="316" y="394" width="12" height="12" transform="rotate(45 322 400)"/>
+    <rect x="476" y="334" width="12" height="12" transform="rotate(45 482 340)"/>
+    <rect x="676" y="254" width="12" height="12" transform="rotate(45 682 260)"/>
+    <rect x="856" y="184" width="12" height="12" transform="rotate(45 862 190)"/>
+    <rect x="1056" y="114" width="12" height="12" transform="rotate(45 1062 120)"/>
+  </g>
+
+  <!-- 로고 영역 -->
+  <text x="80" y="120" font-family="Inter, sans-serif" font-size="20" font-weight="700" letter-spacing="3" fill="#00d084" opacity="0.8">FACT CHART</text>
+
+  <!-- 메인 타이틀 -->
+  <text x="80" y="230" font-family="'Noto Sans KR', sans-serif" font-size="68" font-weight="900" fill="#f0f4f8" letter-spacing="-2">공시 × 주가</text>
+  <text x="80" y="310" font-family="'Noto Sans KR', sans-serif" font-size="68" font-weight="900" fill="#f0f4f8" letter-spacing="-2">패턴 분석</text>
+
+  <!-- 서브 카피 -->
+  <text x="80" y="378" font-family="'Noto Sans KR', sans-serif" font-size="24" font-weight="400" fill="#7a8fa3">공시가 반복된다  →  차트가 반복된다  →  당신만의 매매 패턴 완성</text>
+
+  <!-- 구분선 -->
+  <rect x="80" y="410" width="480" height="1" fill="rgba(255,255,255,0.1)"/>
+
+  <!-- 하단 통계 -->
+  <g font-family="Inter, sans-serif">
+    <text x="80" y="455" font-size="36" font-weight="700" fill="#00d084">12</text>
+    <text x="80" y="478" font-size="13" font-weight="500" fill="#7a8fa3" letter-spacing="1">종목</text>
+
+    <text x="200" y="455" font-size="36" font-weight="700" fill="#00d084">2Y</text>
+    <text x="200" y="478" font-size="13" font-weight="500" fill="#7a8fa3" letter-spacing="1">데이터</text>
+
+    <text x="310" y="455" font-size="36" font-weight="700" fill="#00d084">566+</text>
+    <text x="310" y="478" font-size="13" font-weight="500" fill="#7a8fa3" letter-spacing="1">공시 분석</text>
+
+    <text x="490" y="455" font-size="36" font-weight="700" fill="#00d084">FREE</text>
+    <text x="490" y="478" font-size="13" font-weight="500" fill="#7a8fa3" letter-spacing="1">무료</text>
+  </g>
+
+  <!-- URL -->
+  <text x="80" y="560" font-family="Inter, sans-serif" font-size="16" font-weight="500" fill="#3d4f63" letter-spacing="1">factoveropinion.github.io/fact-over-opinion</text>
+
+  <!-- 우측 장식 카드 -->
+  <rect x="820" y="200" width="300" height="160" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="840" y="240" font-family="'Noto Sans KR', sans-serif" font-size="13" fill="#7a8fa3">삼성전자 자사주</text>
+  <text x="840" y="275" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#e53e3e">▲ +1.61%</text>
+  <text x="840" y="305" font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#556677">25건 평균 수익률</text>
+  <rect x="840" y="330" width="260" height="4" rx="2" fill="rgba(229,62,62,0.2)"/>
+  <rect x="840" y="330" width="160" height="4" rx="2" fill="#e53e3e"/>
+
+  <rect x="820" y="385" width="300" height="100" rx="12" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  <text x="840" y="420" font-family="'Noto Sans KR', sans-serif" font-size="13" fill="#7a8fa3">한화에어로 대규모계약</text>
+  <text x="840" y="455" font-family="Inter, sans-serif" font-size="28" font-weight="700" fill="#e53e3e">▲ +2.59%</text>
+  <text x="840" y="476" font-family="'Noto Sans KR', sans-serif" font-size="12" fill="#556677">2건 평균</text>
+</svg>
