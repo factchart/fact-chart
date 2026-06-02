@@ -199,6 +199,7 @@ body {
   color: var(--text3);
   letter-spacing: 1px;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .stock-section-top {
@@ -207,6 +208,29 @@ body {
   justify-content: space-between;
   margin-bottom: 8px;
   gap: 12px;
+}
+
+.stock-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.stock-row .section-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.stock-row .stock-grid {
+  flex: 1;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  gap: 5px;
+}
+
+.stock-row .stock-search-wrap {
+  flex-shrink: 0;
 }
 
 .stock-search-wrap {
@@ -292,7 +316,7 @@ body {
   color: var(--text2);
   background: var(--surface);
   border: 1px solid var(--border2);
-  padding: 8px 16px;
+  padding: 7px 13px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s;
@@ -337,7 +361,7 @@ body {
 
 .chart-panel-header {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   padding: 18px 24px 16px;
   border-bottom: 1px solid var(--border);
@@ -401,7 +425,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
@@ -1300,15 +1324,15 @@ tr.disc-highlight {
 
   <!-- 종목 선택 -->
   <div class="stock-section">
-    <div class="stock-section-top">
-      <div class="section-label">종목 선택</div>
+    <div class="stock-row">
+      <div class="section-label">종목</div>
+      <div class="stock-grid" id="stockBtns"></div>
       <div class="stock-search-wrap">
         <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
         <span class="stock-search-icon">⌕</span>
         <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
       </div>
     </div>
-    <div class="stock-grid" id="stockBtns"></div>
   </div>
 
   <!-- 메인 레이아웃 -->
