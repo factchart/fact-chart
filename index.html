@@ -190,7 +190,7 @@ body {
 }
 
 /* ── 종목 선택 ── */
-.stock-section { margin-bottom: 12px; }
+.stock-section { margin-bottom: 14px; }
 
 /* 종목 선택 한 줄 */
 .stock-row {
@@ -213,49 +213,85 @@ body {
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: visible;
-  gap: 5px;
+  gap: 6px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
-  padding: 2px 0;
+  padding: 2px 4px;
 }
 
 .stock-row .stock-grid::-webkit-scrollbar { display: none; }
 
-/* › 화살표 — 버튼 영역 우측 끝 오버레이 */
-.scroll-arrow-right {
+/* ‹ 좌측 arrow — 호버 전에도 fade 영역으로 잘림 힌트 */
+.scroll-arrow-left {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
   bottom: 0;
-  width: 52px;
-  background: linear-gradient(to right, transparent, var(--bg) 50%);
+  width: 64px;
+  background: linear-gradient(to left, transparent, var(--bg) 70%);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  opacity: 0;
+  justify-content: flex-start;
   pointer-events: none;
   transition: opacity 0.2s;
   z-index: 20;
 }
 
-.stock-row:hover .scroll-arrow-right:not(.hidden) {
+.scroll-arrow-left.hidden { opacity: 0; }
+.scroll-arrow-left:not(.hidden) { opacity: 1; }
+
+/* 호버 전: 페이드만 보임 (버튼 숨김) */
+.scroll-arrow-left .arrow-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.stock-row:hover .scroll-arrow-left:not(.hidden) .arrow-btn {
   opacity: 1;
   pointer-events: auto;
 }
 
-.scroll-arrow-right.hidden { display: none; }
+/* › 우측 arrow — 호버 전에도 fade로 더 있다는 힌트 */
+.scroll-arrow-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  background: linear-gradient(to right, transparent, var(--bg) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 20;
+}
+
+.scroll-arrow-right.hidden { opacity: 0; }
+.scroll-arrow-right:not(.hidden) { opacity: 1; }
+
+/* 호버 전: 페이드만 보임 (버튼 숨김) */
+.scroll-arrow-right .arrow-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.stock-row:hover .scroll-arrow-right:not(.hidden) .arrow-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .arrow-btn {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   background: var(--card);
   border: 1px solid var(--border2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text2);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
@@ -268,19 +304,19 @@ body {
 .stock-search-wrap {
   position: relative;
   flex-shrink: 0;
-  margin-left: 16px;
+  margin-left: 20px;
 }
 
 .stock-search {
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--border2);
   border-radius: var(--radius-sm);
-  padding: 7px 34px 7px 12px;
-  width: 160px;
+  padding: 9px 36px 9px 14px;
+  width: 180px;
   outline: none;
   transition: border-color 0.15s;
 }
@@ -343,12 +379,12 @@ body {
 
 .stock-btn {
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text2);
   background: var(--surface);
   border: 1px solid var(--border2);
-  padding: 7px 13px;
+  padding: 9px 16px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s;
@@ -407,7 +443,7 @@ body {
 .stock-info-left {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 22px;
 }
 
 .chart-stock-name {
@@ -1370,6 +1406,9 @@ tr.disc-highlight {
       <div class="stock-section">
         <div class="stock-row" id="stockRow">
           <div class="stock-grid-wrap">
+            <div class="scroll-arrow-left hidden" id="arrowLeft" onclick="scrollStocks(-1)">
+              <div class="arrow-btn">‹</div>
+            </div>
             <div class="stock-grid" id="stockBtns"></div>
             <div class="scroll-arrow-right hidden" id="arrowRight" onclick="scrollStocks(1)">
               <div class="arrow-btn">›</div>
@@ -1581,21 +1620,20 @@ function renderButtons() {
 
 function scrollStocks(dir) {
   const grid = document.getElementById('stockBtns');
-  grid.scrollLeft += dir * 200;
+  grid.scrollLeft += dir * 220;
   setTimeout(updateArrows, 150);
 }
 
 function updateArrows() {
   const grid = document.getElementById('stockBtns');
+  const L = document.getElementById('arrowLeft');
   const R = document.getElementById('arrowRight');
-  if (!grid || !R) return;
+  if (!grid) return;
   const canScroll = grid.scrollWidth > grid.clientWidth + 2;
+  const atStart = grid.scrollLeft <= 2;
   const atEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2;
-  if (!canScroll || atEnd) {
-    R.classList.add('hidden');
-  } else {
-    R.classList.remove('hidden');
-  }
+  if (L) L.classList.toggle('hidden', !canScroll || atStart);
+  if (R) R.classList.toggle('hidden', !canScroll || atEnd);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
