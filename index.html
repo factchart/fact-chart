@@ -393,7 +393,7 @@ body {
 
 .chart-panel-header {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 18px 24px 16px;
   border-bottom: 1px solid var(--border);
@@ -459,6 +459,7 @@ body {
   align-items: flex-end;
   gap: 4px;
   flex-shrink: 0;
+  justify-content: flex-start;
 }
 
 .price-value {
@@ -1354,23 +1355,23 @@ tr.disc-highlight {
     <button class="impact-close" onclick="document.getElementById('impactBanner').style.display='none'" aria-label="닫기">×</button>
   </div>
 
-  <!-- 종목 선택 -->
-  <div class="stock-section">
-    <div class="stock-row" id="stockRow">
-      <div class="stock-grid" id="stockBtns"></div>
-      <div class="stock-search-wrap">
-        <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
-        <span class="stock-search-icon">⌕</span>
-        <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- 메인 레이아웃 -->
   <div class="main-layout">
 
     <!-- 왼쪽 -->
     <div class="left-col">
+
+      <!-- 종목 선택 -->
+      <div class="stock-section">
+        <div class="stock-row" id="stockRow">
+          <div class="stock-grid" id="stockBtns"></div>
+          <div class="stock-search-wrap">
+            <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
+            <span class="stock-search-icon">⌕</span>
+            <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- 차트 패널 -->
       <div class="chart-panel">
