@@ -223,18 +223,18 @@ body {
   flex-wrap: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: 5px;
+  gap: 4px;
   scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-behavior: smooth;
-  padding: 2px 0;
+  padding: 1px 0;
 }
 
 .stock-row .stock-grid::-webkit-scrollbar { display: none; }
 
 .stock-row .stock-search-wrap {
   flex-shrink: 0;
-  margin-left: 8px;
+  margin-left: 16px;
 }
 
 /* 스크롤 화살표 */
@@ -280,13 +280,12 @@ body {
   padding: 7px 34px 7px 12px;
   width: 160px;
   outline: none;
-  transition: border-color 0.15s, width 0.2s;
+  transition: border-color 0.15s;
 }
 
 .stock-search::placeholder { color: var(--text3); }
 .stock-search:focus {
   border-color: var(--accent);
-  width: 200px;
 }
 
 .stock-search-icon {
@@ -351,6 +350,8 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .stock-btn:hover {
@@ -403,7 +404,7 @@ body {
 .stock-info-left {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .chart-stock-name {
@@ -457,7 +458,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 2px;
   flex-shrink: 0;
   justify-content: flex-start;
 }
@@ -1015,6 +1016,7 @@ tbody td {
   white-space: nowrap;
   transition: all 0.3s;
   align-self: flex-end;
+  margin-bottom: 10px;
 }
 
 .market-status.open {
@@ -1364,11 +1366,17 @@ tr.disc-highlight {
       <!-- 종목 선택 -->
       <div class="stock-section">
         <div class="stock-row" id="stockRow">
-          <div class="stock-grid" id="stockBtns"></div>
+          <div class="stock-grid-wrap">
+            <div class="stock-grid" id="stockBtns"></div>
+            <div class="scroll-arrow-right hidden" id="arrowRight" onclick="scrollStocks(1)">
+              <div class="arrow-btn">›</div>
+            </div>
+          </div>
           <div class="stock-search-wrap">
             <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
             <span class="stock-search-icon">⌕</span>
             <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
+          </div>
           </div>
         </div>
       </div>
@@ -1566,19 +1574,29 @@ function renderButtons() {
   document.getElementById('stockBtns').innerHTML = STOCKS.map(s =>
     `<button class="stock-btn ${s===currentStock?'active':''}" onclick="selectStock('${s}')">${s}</button>`
   ).join('');
-  updateArrows();
+  setTimeout(updateArrows, 100);
 }
 
 function scrollStocks(dir) {
   const grid = document.getElementById('stockBtns');
   grid.scrollLeft += dir * 200;
+  setTimeout(updateArrows, 150);
 }
 
-function updateArrows() {}
+function updateArrows() {
+  const grid = document.getElementById('stockBtns');
+  const R = document.getElementById('arrowRight');
+  if (!grid || !R) return;
+  const atEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2;
+  R.classList.toggle('hidden', atEnd);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.getElementById('stockBtns');
-  if (grid) grid.addEventListener('scroll', () => {});
+  if (grid) {
+    grid.addEventListener('scroll', updateArrows);
+    setTimeout(updateArrows, 300);
+  }
 });
 
 function filterStocks(q) {
