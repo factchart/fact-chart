@@ -213,10 +213,9 @@ body {
 .stock-row {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
   flex-wrap: nowrap;
   position: relative;
-  overflow: hidden;
 }
 
 .stock-row .stock-grid {
@@ -261,18 +260,9 @@ body {
 
 .scroll-arrow:hover { background: var(--surface); color: var(--accent); }
 .stock-row:hover .scroll-arrow { opacity: 1; }
-.scroll-arrow.hidden { opacity: 0 !important; pointer-events: none !important; }
+.scroll-arrow.hidden { opacity: 0 !important; pointer-events: none !important; width: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; overflow: hidden !important; }
 
-.stock-row::after {
-  content: '';
-  position: absolute;
-  right: 188px;
-  top: 0; bottom: 0;
-  width: 40px;
-  background: linear-gradient(to right, transparent, var(--bg));
-  pointer-events: none;
-  z-index: 5;
-}
+
 
 .stock-search-wrap {
   position: relative;
@@ -395,6 +385,7 @@ body {
 .chart-panel {
   background: var(--card);
   border: 1px solid var(--border2);
+  border-top: 2px solid var(--accent);
   border-radius: var(--radius);
   margin-bottom: 10px;
   overflow: hidden;
@@ -1366,9 +1357,7 @@ tr.disc-highlight {
   <!-- 종목 선택 -->
   <div class="stock-section">
     <div class="stock-row" id="stockRow">
-      <button class="scroll-arrow left hidden" id="arrowLeft" onclick="scrollStocks(-1)" aria-label="왼쪽">‹</button>
       <div class="stock-grid" id="stockBtns"></div>
-      <button class="scroll-arrow right" id="arrowRight" onclick="scrollStocks(1)" aria-label="오른쪽">›</button>
       <div class="stock-search-wrap">
         <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
         <span class="stock-search-icon">⌕</span>
@@ -1581,22 +1570,14 @@ function renderButtons() {
 
 function scrollStocks(dir) {
   const grid = document.getElementById('stockBtns');
-  grid.scrollLeft += dir * 180;
-  setTimeout(updateArrows, 150);
+  grid.scrollLeft += dir * 200;
 }
 
-function updateArrows() {
-  const grid = document.getElementById('stockBtns');
-  const L = document.getElementById('arrowLeft');
-  const R = document.getElementById('arrowRight');
-  if (!grid || !L || !R) return;
-  L.classList.toggle('hidden', grid.scrollLeft <= 0);
-  R.classList.toggle('hidden', grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2);
-}
+function updateArrows() {}
 
 document.addEventListener('DOMContentLoaded', () => {
   const grid = document.getElementById('stockBtns');
-  if (grid) grid.addEventListener('scroll', updateArrows);
+  if (grid) grid.addEventListener('scroll', () => {});
 });
 
 function filterStocks(q) {
