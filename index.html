@@ -55,7 +55,7 @@ body {
   border: 1px solid rgba(0,208,132,0.22);
   border-radius: var(--radius);
   padding: 12px 20px;
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 
 .impact-inner {
@@ -110,9 +110,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 0 18px;
+  padding: 14px 0 12px;
   border-bottom: 1px solid var(--border2);
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   gap: 24px;
 }
 
@@ -190,7 +190,7 @@ body {
 }
 
 /* ── 종목 선택 ── */
-.stock-section { margin-bottom: 20px; }
+.stock-section { margin-bottom: 12px; }
 
 .section-label {
   font-family: var(--sans);
@@ -199,7 +199,84 @@ body {
   color: var(--text3);
   letter-spacing: 1px;
   text-transform: uppercase;
+}
+
+.stock-section-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 10px;
+  gap: 12px;
+}
+
+.stock-search-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.stock-search {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 7px 34px 7px 12px;
+  width: 180px;
+  outline: none;
+  transition: border-color 0.15s, width 0.2s;
+}
+
+.stock-search::placeholder { color: var(--text3); }
+.stock-search:focus {
+  border-color: var(--accent);
+  width: 220px;
+}
+
+.stock-search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.stock-search-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  min-width: 180px;
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.stock-search-dropdown.open { display: block; }
+
+.stock-search-opt {
+  padding: 9px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text2);
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid var(--border);
+}
+
+.stock-search-opt:last-child { border-bottom: none; }
+.stock-search-opt:hover { background: rgba(0,208,132,0.08); color: var(--accent); }
+.stock-search-opt mark {
+  background: none;
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .stock-grid {
@@ -254,23 +331,30 @@ body {
   background: var(--card);
   border: 1px solid var(--border2);
   border-radius: var(--radius);
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   overflow: hidden;
 }
 
 .chart-panel-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px 16px;
+  padding: 16px 24px;
   border-bottom: 1px solid var(--border);
+  gap: 16px;
 }
 
-.stock-info-left { display: flex; flex-direction: column; gap: 6px; }
+.stock-info-left { display: flex; flex-direction: column; gap: 5px; }
+
+.market-status-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .chart-stock-name {
   font-family: var(--sans);
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 800;
   color: var(--text);
   letter-spacing: -1px;
@@ -314,7 +398,7 @@ body {
   font-size: 12px;
 }
 
-.price-block { text-align: right; }
+.price-block { text-align: right; justify-self: end; }
 
 .price-value {
   font-family: var(--num);
@@ -340,7 +424,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 12px 24px;
+  padding: 9px 24px;
   border-bottom: 1px solid var(--border);
   background: rgba(0,0,0,0.15);
 }
@@ -409,7 +493,7 @@ body {
   display: none;
   align-items: center;
   gap: 6px;
-  padding: 10px 24px;
+  padding: 7px 24px;
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
 }
@@ -450,8 +534,8 @@ body {
 /* ── 통계 바 ── */
 .stats-bar {
   display: none;
-  padding: 12px 24px;
-  gap: 8px;
+  padding: 8px 24px;
+  gap: 6px;
   border-bottom: 1px solid var(--border);
   background: rgba(0,0,0,0.12);
   flex-wrap: wrap;
@@ -465,7 +549,7 @@ body {
   gap: 4px;
   background: var(--surface);
   border: 1px solid var(--border2);
-  padding: 12px 16px;
+  padding: 8px 12px;
   flex: 1;
   min-width: 90px;
   border-radius: var(--radius-sm);
@@ -491,14 +575,14 @@ body {
 .stat-pill-val.neutral { color: var(--gold); }
 
 /* ── 차트 ── */
-.chart-body { padding: 16px 20px 8px; }
+.chart-body { padding: 10px 20px 4px; }
 
-canvas { max-height: 440px; }
+canvas { max-height: 360px; }
 
 .chart-legend {
   display: flex;
   gap: 20px;
-  padding: 10px 24px 16px;
+  padding: 6px 24px 10px;
   flex-wrap: wrap;
 }
 
@@ -856,19 +940,23 @@ tbody td {
 .market-status {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-family: var(--num);
-  font-size: 10px;
-  font-weight: 500;
+  gap: 7px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
   color: var(--text3);
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  padding: 2px 8px 2px 6px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  padding: 7px 14px;
   border-radius: 20px;
-  vertical-align: middle;
-  margin-left: 8px;
-  position: relative;
-  top: -2px;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.market-status.open {
+  color: var(--accent);
+  border-color: rgba(0,208,132,0.35);
+  background: rgba(0,208,132,0.06);
 }
 
 @keyframes marketBlink {
@@ -894,14 +982,14 @@ tbody td {
 
 /* ── 생동감 티커 ── */
 .ticker-bar {
-  background: rgba(0,0,0,0.4);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
   overflow: hidden;
   height: 32px;
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-top: 12px;
   position: relative;
 }
 
@@ -1203,36 +1291,16 @@ tr.disc-highlight {
     <button class="impact-close" onclick="document.getElementById('impactBanner').style.display='none'" aria-label="닫기">×</button>
   </div>
 
-  <!-- 실시간 티커 바 -->
-  <div class="ticker-bar" id="tickerBar">
-    <div class="ticker-track" id="tickerTrack">
-      <span class="ticker-item"><span class="ticker-name">삼성전자</span><span class="ticker-price" id="tk-0">—</span><span class="ticker-chg" id="tkc-0">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">SK하이닉스</span><span class="ticker-price" id="tk-1">—</span><span class="ticker-chg" id="tkc-1">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">현대차</span><span class="ticker-price" id="tk-2">—</span><span class="ticker-chg" id="tkc-2">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">카카오</span><span class="ticker-price" id="tk-3">—</span><span class="ticker-chg" id="tkc-3">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">NAVER</span><span class="ticker-price" id="tk-4">—</span><span class="ticker-chg" id="tkc-4">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">LG에너지솔루션</span><span class="ticker-price" id="tk-5">—</span><span class="ticker-chg" id="tkc-5">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">한화에어로스페이스</span><span class="ticker-price" id="tk-6">—</span><span class="ticker-chg" id="tkc-6">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">KB금융</span><span class="ticker-price" id="tk-7">—</span><span class="ticker-chg" id="tkc-7">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">HD현대</span><span class="ticker-price" id="tk-8">—</span><span class="ticker-chg" id="tkc-8">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">두산에너빌리티</span><span class="ticker-price" id="tk-9">—</span><span class="ticker-chg" id="tkc-9">—</span></span>
-      <!-- 복제본 (무한 루프) -->
-      <span class="ticker-item"><span class="ticker-name">삼성전자</span><span class="ticker-price" id="tk-0b">—</span><span class="ticker-chg" id="tkc-0b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">SK하이닉스</span><span class="ticker-price" id="tk-1b">—</span><span class="ticker-chg" id="tkc-1b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">현대차</span><span class="ticker-price" id="tk-2b">—</span><span class="ticker-chg" id="tkc-2b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">카카오</span><span class="ticker-price" id="tk-3b">—</span><span class="ticker-chg" id="tkc-3b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">NAVER</span><span class="ticker-price" id="tk-4b">—</span><span class="ticker-chg" id="tkc-4b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">LG에너지솔루션</span><span class="ticker-price" id="tk-5b">—</span><span class="ticker-chg" id="tkc-5b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">한화에어로스페이스</span><span class="ticker-price" id="tk-6b">—</span><span class="ticker-chg" id="tkc-6b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">KB금융</span><span class="ticker-price" id="tk-7b">—</span><span class="ticker-chg" id="tkc-7b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">HD현대</span><span class="ticker-price" id="tk-8b">—</span><span class="ticker-chg" id="tkc-8b">—</span></span>
-      <span class="ticker-item"><span class="ticker-name">두산에너빌리티</span><span class="ticker-price" id="tk-9b">—</span><span class="ticker-chg" id="tkc-9b">—</span></span>
-    </div>
-  </div>
-
   <!-- 종목 선택 -->
   <div class="stock-section">
-    <div class="section-label">종목 선택</div>
+    <div class="stock-section-top">
+      <div class="section-label">종목 선택</div>
+      <div class="stock-search-wrap">
+        <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
+        <span class="stock-search-icon">⌕</span>
+        <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
+      </div>
+    </div>
     <div class="stock-grid" id="stockBtns"></div>
   </div>
 
@@ -1246,13 +1314,19 @@ tr.disc-highlight {
       <div class="chart-panel">
         <div class="chart-panel-header">
           <div class="stock-info-left">
-            <div class="chart-stock-name" id="currentStockName">—<span class="market-status" id="marketStatus"><span class="market-dot" id="marketDot"></span><span id="marketLabel">—</span></span></div>
+            <div class="chart-stock-name" id="currentStockName">—</div>
             <div class="stock-meta" id="stockMeta">
               <span class="stock-sector" id="stockSector">—</span>
               <span class="stock-sep">·</span>
               <span class="stock-desc" id="stockDesc">—</span>
               <span class="stock-sep">·</span>
               <span class="stock-ticker" id="stockTicker">—</span>
+            </div>
+          </div>
+          <div class="market-status-center">
+            <div class="market-status" id="marketStatus">
+              <span class="market-dot" id="marketDot"></span>
+              <span id="marketLabel">—</span>
             </div>
           </div>
           <div class="price-block">
@@ -1310,6 +1384,32 @@ tr.disc-highlight {
         </div>
         <div class="table-wrap">
           <div id="tableContainer"><div class="loading">종목을 선택하세요</div></div>
+        </div>
+      </div>
+
+      <!-- 실시간 티커 바 (하단) -->
+      <div class="ticker-bar" id="tickerBar">
+        <div class="ticker-track" id="tickerTrack">
+          <span class="ticker-item"><span class="ticker-name">삼성전자</span><span class="ticker-price" id="tk-0">—</span><span class="ticker-chg" id="tkc-0">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">SK하이닉스</span><span class="ticker-price" id="tk-1">—</span><span class="ticker-chg" id="tkc-1">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">현대차</span><span class="ticker-price" id="tk-2">—</span><span class="ticker-chg" id="tkc-2">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">카카오</span><span class="ticker-price" id="tk-3">—</span><span class="ticker-chg" id="tkc-3">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">NAVER</span><span class="ticker-price" id="tk-4">—</span><span class="ticker-chg" id="tkc-4">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">LG에너지솔루션</span><span class="ticker-price" id="tk-5">—</span><span class="ticker-chg" id="tkc-5">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">한화에어로스페이스</span><span class="ticker-price" id="tk-6">—</span><span class="ticker-chg" id="tkc-6">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">KB금융</span><span class="ticker-price" id="tk-7">—</span><span class="ticker-chg" id="tkc-7">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">HD현대</span><span class="ticker-price" id="tk-8">—</span><span class="ticker-chg" id="tkc-8">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">두산에너빌리티</span><span class="ticker-price" id="tk-9">—</span><span class="ticker-chg" id="tkc-9">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">삼성전자</span><span class="ticker-price" id="tk-0b">—</span><span class="ticker-chg" id="tkc-0b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">SK하이닉스</span><span class="ticker-price" id="tk-1b">—</span><span class="ticker-chg" id="tkc-1b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">현대차</span><span class="ticker-price" id="tk-2b">—</span><span class="ticker-chg" id="tkc-2b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">카카오</span><span class="ticker-price" id="tk-3b">—</span><span class="ticker-chg" id="tkc-3b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">NAVER</span><span class="ticker-price" id="tk-4b">—</span><span class="ticker-chg" id="tkc-4b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">LG에너지솔루션</span><span class="ticker-price" id="tk-5b">—</span><span class="ticker-chg" id="tkc-5b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">한화에어로스페이스</span><span class="ticker-price" id="tk-6b">—</span><span class="ticker-chg" id="tkc-6b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">KB금융</span><span class="ticker-price" id="tk-7b">—</span><span class="ticker-chg" id="tkc-7b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">HD현대</span><span class="ticker-price" id="tk-8b">—</span><span class="ticker-chg" id="tkc-8b">—</span></span>
+          <span class="ticker-item"><span class="ticker-name">두산에너빌리티</span><span class="ticker-price" id="tk-9b">—</span><span class="ticker-chg" id="tkc-9b">—</span></span>
         </div>
       </div>
 
@@ -1404,6 +1504,31 @@ function renderButtons() {
   ).join('');
 }
 
+function filterStocks(q) {
+  const dd = document.getElementById('stockSearchDropdown');
+  const val = q.trim();
+  if (!val) { dd.classList.remove('open'); return; }
+  const matched = STOCKS.filter(s => s.toLowerCase().includes(val.toLowerCase()));
+  if (!matched.length) { dd.innerHTML = '<div class="stock-search-opt" style="color:var(--text3)">검색 결과 없음</div>'; dd.classList.add('open'); return; }
+  const re = new RegExp('(' + val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  dd.innerHTML = matched.map(s =>
+    `<div class="stock-search-opt" onclick="selectFromSearch('${s}')">${s.replace(re,'<mark>$1</mark>')}</div>`
+  ).join('');
+  dd.classList.add('open');
+}
+
+function selectFromSearch(name) {
+  document.getElementById('stockSearch').value = '';
+  document.getElementById('stockSearchDropdown').classList.remove('open');
+  selectStock(name);
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.stock-search-wrap')) {
+    document.getElementById('stockSearchDropdown').classList.remove('open');
+  }
+});
+
 function selectStock(name) {
   currentStock = name;
   patternOn = true; // 종목 변경 시도 ON 유지
@@ -1419,7 +1544,7 @@ function selectStock(name) {
   document.getElementById('legendPattern').style.display = 'flex';
 
   renderButtons();
-  document.getElementById('currentStockName').childNodes[0].textContent = name;
+  document.getElementById('currentStockName').textContent = name;
   const meta = STOCK_META[name] || {};
   document.getElementById('stockSector').textContent = meta.sector || '—';
   document.getElementById('stockDesc').textContent = meta.desc || '—';
@@ -2335,9 +2460,11 @@ function initMarketStatus() {
     const isOpen = isWeekday && timeVal >= 9*60 && timeVal < 15*60+30;
     const dot = document.getElementById('marketDot');
     const label = document.getElementById('marketLabel');
+    const wrap = document.getElementById('marketStatus');
     if (dot && label) {
       dot.className = 'market-dot ' + (isOpen ? 'open' : 'closed');
       label.textContent = isOpen ? '국내 정규장' : '장 마감';
+      if (wrap) wrap.classList.toggle('open', isOpen);
     }
   }
   checkMarket();
