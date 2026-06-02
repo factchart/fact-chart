@@ -1443,45 +1443,41 @@ tr.disc-highlight {
 
   /* 모바일: right-col을 차트 아래 공시이력 위에 JS로 이동 */
 
-  /* ── 2. 모바일 차트헤더: 종목명 + 국내정규장 옆에 ── */
+  /* ── 2. 모바일 차트헤더 ── */
   .chart-panel-header {
     padding: 12px 14px;
-    gap: 0;
     flex-direction: column;
     align-items: flex-start;
+    gap: 8px;
   }
 
-  /* 종목명과 market-status를 한 줄로 */
-  .stock-info-left {
-    width: 100%;
-    gap: 6px;
-  }
-
-  /* 종목명 행 = 이름 + 뱃지 가로 배치 */
-  .chart-stock-name {
-    font-size: 22px;
+  /* 종목명 행: 이름 + 뱃지 가로 한 줄 */
+  .mobile-name-row {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: nowrap;
+    width: 100%;
   }
 
-  /* market-status를 price-block 밖으로 꺼내 종목명 옆으로 */
-  .price-block {
-    align-items: flex-start;
-    margin-top: 8px;
-    flex-direction: row;
-    align-items: baseline;
-    gap: 8px;
-  }
+  .stock-info-left { width: 100%; gap: 4px; }
+  .chart-stock-name { font-size: 22px; }
 
-  /* market-status는 모바일에서 차트헤더 우상단 대신 종목명 옆 */
+  /* market-status: stock-info-left 두번째 행으로 (JS 이동 불필요) */
   .market-status {
     font-size: 10px;
     padding: 3px 9px;
     margin-bottom: 0;
-    order: unset;
-    position: static;
+    align-self: auto;
+  }
+
+  /* 가격 블록: 종목명 아래 */
+  .price-block {
+    align-items: flex-start;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 0;
   }
 
   .price-value { font-size: 22px; }
@@ -1513,9 +1509,11 @@ tr.disc-highlight {
   .legend-item { font-size: 11px; }
 
   /* ── 티커 ── */
-  .ticker-bar { height: 26px; margin: 8px 0; }
-  .ticker-item { font-size: 11px; padding: 0 14px; }
+  .ticker-bar { height: 30px; margin: 8px 0; overflow: hidden; }
+  .ticker-track { display: flex; flex-wrap: nowrap; width: max-content; }
+  .ticker-item { font-size: 11px; padding: 0 16px; gap: 6px; white-space: nowrap; flex-shrink: 0; }
   .ticker-name { font-size: 10px; }
+  .ticker-price { font-size: 11px; }
 
   /* ── 4. 공시이력 필터 한 줄로 ── */
   .table-panel-header {
@@ -1596,9 +1594,9 @@ tr.disc-highlight {
 
   .filter-wrap { gap: 4px; }
   .filter-btn { font-size: 11px; padding: 3px 8px; }
+  .td-type { font-size: 9px; padding: 2px 5px; }
 
-  /* 공시 테이블 — 제목 컬럼만 */
-  .td-type { display: none; }
+  /* 공시 테이블 — 유형 유지 */
 }
 </style>
 </head>
@@ -2462,6 +2460,42 @@ document.addEventListener('mousemove', e => {
       _zoomMin=Math.max(0,newMin); _zoomMax=Math.min(_zoomTotal-1,newMax);
       _applyZoom();
     });
+
+    // 미니맵 터치 이벤트 (모바일)
+    minimapRange.addEventListener('touchstart', e => {
+      e.stopPropagation();
+      const t = e.touches[0];
+      mmDrag = {startX:t.clientX, startMin:_zoomMin, startMax:_zoomMax};
+      e.preventDefault();
+    }, {passive:false});
+    minimapWrap.addEventListener('touchstart', e => {
+      if (mmDrag) return;
+      const t = e.touches[0];
+      const rect = minimapWrap.getBoundingClientRect();
+      const ratio = (t.clientX-rect.left)/rect.width;
+      const clickIdx = Math.round(ratio*(_zoomTotal-1));
+      const range = _zoomMax - _zoomMin;
+      let newMin = Math.round(clickIdx-range/2), newMax = newMin+range;
+      if (newMin<0){newMin=0;newMax=range;}
+      if (newMax>=_zoomTotal){newMax=_zoomTotal-1;newMin=newMax-range;}
+      _zoomMin=Math.max(0,newMin); _zoomMax=Math.min(_zoomTotal-1,newMax);
+      _applyZoom();
+      e.preventDefault();
+    }, {passive:false});
+    document.addEventListener('touchmove', e => {
+      if (!mmDrag) return;
+      const t = e.touches[0];
+      const rect = minimapWrap.getBoundingClientRect();
+      const range = mmDrag.startMax - mmDrag.startMin;
+      const barPx = rect.width / (_zoomTotal-1);
+      const barDelta = Math.round((t.clientX-mmDrag.startX)/barPx);
+      let newMin = mmDrag.startMin+barDelta, newMax = mmDrag.startMax+barDelta;
+      if (newMin<0){newMin=0;newMax=range;}
+      if (newMax>=_zoomTotal){newMax=_zoomTotal-1;newMin=newMax-range;}
+      _zoomMin=newMin; _zoomMax=newMax; _applyZoom();
+      e.preventDefault();
+    }, {passive:false});
+    document.addEventListener('touchend', () => { if(mmDrag) mmDrag=null; });
     // ── 뉴스 브리핑 (Claude API + 웹서치) ──
 let newsAbortController = null;
 let lastNewsStock = null;
@@ -2850,6 +2884,28 @@ document.addEventListener('mousemove', e => {
   }
 });
 
+// 모바일: 터치 후 툴팁 자동 숨김
+let tooltipHideTimer = null;
+document.addEventListener('touchstart', e => {
+  const tooltip = document.getElementById('customTooltip');
+  if (!e.target.closest('canvas')) {
+    tooltip.style.display = 'none';
+    return;
+  }
+  // canvas 터치 시 툴팁 위치 계산
+  if (e.touches.length === 1) {
+    const t = e.touches[0];
+    const tw = tooltip.offsetWidth||200, th = tooltip.offsetHeight||80;
+    let left = t.clientX + 16, top = t.clientY - th - 12;
+    if (left + tw > window.innerWidth - 8) left = t.clientX - tw - 16;
+    if (top < 8) top = t.clientY + 12;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    clearTimeout(tooltipHideTimer);
+    tooltipHideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 2500);
+  }
+}, {passive: true});
+
 renderButtons();
 fetch(DATA_URL)
   .then(r=>r.json())
@@ -2891,30 +2947,37 @@ function initMarketStatus() {
   repositionStatPanel();
   window.addEventListener('resize', repositionStatPanel);
 
-  // 모바일에서 market-status를 종목명 옆으로 이동
+  // 모바일: stock-info-left에 종목명+뱃지 flex row로 묶기
   function positionMarketBadge() {
     const ms = document.getElementById('marketStatus');
     const nameEl = document.getElementById('currentStockName');
     const priceBlock = document.querySelector('.price-block');
-    if (!ms || !nameEl || !priceBlock) return;
+    const infoLeft = document.querySelector('.stock-info-left');
+    if (!ms || !nameEl || !priceBlock || !infoLeft) return;
+
     if (window.innerWidth <= 768) {
-      // 종목명 뒤에 배치
-      if (ms.parentElement !== nameEl.parentElement || ms.previousSibling !== nameEl) {
-        nameEl.parentElement.insertBefore(ms, nameEl.nextSibling);
-        nameEl.style.display = 'inline';
-        ms.style.display = 'inline-flex';
-        ms.style.verticalAlign = 'middle';
-        ms.style.marginLeft = '8px';
+      // stock-info-left 첫 번째 자식으로 name+badge 묶음 div 생성
+      let nameRow = document.getElementById('mobileNameRow');
+      if (!nameRow) {
+        nameRow = document.createElement('div');
+        nameRow.id = 'mobileNameRow';
+        nameRow.className = 'mobile-name-row';
+        infoLeft.insertBefore(nameRow, infoLeft.firstChild);
       }
+      if (nameEl.parentElement !== nameRow) nameRow.appendChild(nameEl);
+      if (ms.parentElement !== nameRow) nameRow.appendChild(ms);
+      ms.style.marginBottom = '0';
     } else {
-      // 데스크톱: price-block 맨 위로 복원
-      if (ms.parentElement !== priceBlock) {
-        priceBlock.insertBefore(ms, priceBlock.firstChild);
-        ms.style.display = '';
-        ms.style.verticalAlign = '';
-        ms.style.marginLeft = '';
-        nameEl.style.display = '';
+      // 데스크톱: nameEl → stock-info-left 첫 번째, ms → price-block 첫 번째
+      if (infoLeft && nameEl.parentElement !== infoLeft) {
+        infoLeft.insertBefore(nameEl, infoLeft.firstChild);
       }
+      if (priceBlock && ms.parentElement !== priceBlock) {
+        priceBlock.insertBefore(ms, priceBlock.firstChild);
+      }
+      ms.style.marginBottom = '';
+      const nr = document.getElementById('mobileNameRow');
+      if (nr && nr.parentElement) nr.parentElement.removeChild(nr);
     }
   }
   positionMarketBadge();
