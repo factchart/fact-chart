@@ -908,7 +908,7 @@ tbody td {
 .ticker-track {
   display: flex;
   gap: 0;
-  animation: tickerScroll 35s linear infinite;
+  animation: tickerScroll 80s linear infinite;
   white-space: nowrap;
   will-change: transform;
 }
@@ -1172,7 +1172,6 @@ tr.disc-highlight {
   <!-- 헤더 — 한 줄 -->
   <header class="header">
     <div class="header-left">
-      <span class="logo-badge">FACT CHART</span>
       <h1 class="site-title">FACT<em> CHART</em></h1>
       <span class="header-sub">공시 × 주가 패턴 분석 — 역사는 반복된다</span>
     </div>
@@ -1420,7 +1419,7 @@ function selectStock(name) {
   document.getElementById('legendPattern').style.display = 'flex';
 
   renderButtons();
-  document.getElementById('currentStockName').textContent = name;
+  document.getElementById('currentStockName').childNodes[0].textContent = name;
   const meta = STOCK_META[name] || {};
   document.getElementById('stockSector').textContent = meta.sector || '—';
   document.getElementById('stockDesc').textContent = meta.desc || '—';
