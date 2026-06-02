@@ -213,24 +213,65 @@ body {
 .stock-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   flex-wrap: nowrap;
-}
-
-.stock-row .section-label {
-  flex-shrink: 0;
-  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
 }
 
 .stock-row .stock-grid {
   flex: 1;
   flex-wrap: nowrap;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   gap: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  padding: 2px 0;
 }
+
+.stock-row .stock-grid::-webkit-scrollbar { display: none; }
 
 .stock-row .stock-search-wrap {
   flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* 스크롤 화살표 */
+.scroll-arrow {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text2);
+  opacity: 0;
+  transition: opacity 0.2s, background 0.15s;
+  z-index: 10;
+  user-select: none;
+  line-height: 1;
+}
+
+.scroll-arrow:hover { background: var(--surface); color: var(--accent); }
+.stock-row:hover .scroll-arrow { opacity: 1; }
+.scroll-arrow.hidden { opacity: 0 !important; pointer-events: none !important; }
+
+.stock-row::after {
+  content: '';
+  position: absolute;
+  right: 188px;
+  top: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+  z-index: 5;
 }
 
 .stock-search-wrap {
@@ -1296,7 +1337,7 @@ tr.disc-highlight {
     </div>
     <div class="header-right">
       <div class="hstat">
-        <div class="hstat-val">10</div>
+        <div class="hstat-val">12</div>
         <div class="hstat-label">종목</div>
       </div>
       <div class="hstat">
@@ -1324,9 +1365,10 @@ tr.disc-highlight {
 
   <!-- 종목 선택 -->
   <div class="stock-section">
-    <div class="stock-row">
-      <div class="section-label">종목</div>
+    <div class="stock-row" id="stockRow">
+      <button class="scroll-arrow left hidden" id="arrowLeft" onclick="scrollStocks(-1)" aria-label="왼쪽">‹</button>
       <div class="stock-grid" id="stockBtns"></div>
+      <button class="scroll-arrow right" id="arrowRight" onclick="scrollStocks(1)" aria-label="오른쪽">›</button>
       <div class="stock-search-wrap">
         <input type="text" id="stockSearch" class="stock-search" placeholder="종목명 검색" oninput="filterStocks(this.value)" autocomplete="off">
         <span class="stock-search-icon">⌕</span>
@@ -1492,9 +1534,11 @@ const STOCK_META = {
   'KB금융':         { sector:'금융',          desc:'국내 1위 금융그룹',      ticker:'105560' },
   'HD현대':         { sector:'조선·에너지',   desc:'세계 1위 조선그룹',      ticker:'267250' },
   '두산에너빌리티': { sector:'원전·에너지',   desc:'SMR·원전 핵심설비',      ticker:'034020' },
+  '셀트리온':       { sector:'바이오·제약',    desc:'항체 바이오시밀러 1위',   ticker:'068270' },
+  'POSCO홀딩스':    { sector:'철강·소재',      desc:'철강·이차전지소재',        ticker:'005490' },
 };
 
-const STOCKS = ['삼성전자','SK하이닉스','현대차','카카오','NAVER','LG에너지솔루션','한화에어로스페이스','KB금융','HD현대','두산에너빌리티'];
+const STOCKS = ['삼성전자','SK하이닉스','현대차','카카오','NAVER','LG에너지솔루션','한화에어로스페이스','KB금융','HD현대','두산에너빌리티','셀트리온','POSCO홀딩스'];
 const DATA_URL = 'stock_data.json';
 
 const TYPE_COLORS = {
@@ -1532,7 +1576,28 @@ function renderButtons() {
   document.getElementById('stockBtns').innerHTML = STOCKS.map(s =>
     `<button class="stock-btn ${s===currentStock?'active':''}" onclick="selectStock('${s}')">${s}</button>`
   ).join('');
+  updateArrows();
 }
+
+function scrollStocks(dir) {
+  const grid = document.getElementById('stockBtns');
+  grid.scrollLeft += dir * 180;
+  setTimeout(updateArrows, 150);
+}
+
+function updateArrows() {
+  const grid = document.getElementById('stockBtns');
+  const L = document.getElementById('arrowLeft');
+  const R = document.getElementById('arrowRight');
+  if (!grid || !L || !R) return;
+  L.classList.toggle('hidden', grid.scrollLeft <= 0);
+  R.classList.toggle('hidden', grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 2);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const grid = document.getElementById('stockBtns');
+  if (grid) grid.addEventListener('scroll', updateArrows);
+});
 
 function filterStocks(q) {
   const dd = document.getElementById('stockSearchDropdown');
