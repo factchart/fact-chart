@@ -1357,6 +1357,169 @@ tr.disc-highlight {
   font-size: 14px;
   font-weight: 700;
 }
+
+/* ══════════════════════════════════════════
+   태블릿 (≤1024px)
+══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .container { padding: 0 20px 60px; }
+
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .right-col {
+    position: static;
+    width: 100%;
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stats-panel-body { padding: 14px 16px; }
+
+  .hstat-val { font-size: 16px; }
+  .site-title { font-size: 18px; }
+}
+
+/* ══════════════════════════════════════════
+   모바일 (≤768px)
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .container { padding: 0 12px 48px; }
+
+  /* 헤더 */
+  .header {
+    flex-wrap: wrap;
+    padding: 12px 0 10px;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .header-left { gap: 10px; flex-wrap: wrap; }
+  .site-title { font-size: 16px; letter-spacing: 1px; }
+  .header-sub { display: none; }
+
+  .header-right { gap: 6px; }
+  .hstat { padding: 6px 10px; }
+  .hstat-val { font-size: 14px; }
+  .hstat-label { font-size: 9px; }
+
+  /* 임팩트 배너 */
+  .impact-banner { padding: 10px 14px; }
+  .impact-text { font-size: 12px; }
+  .impact-sub { display: none; }
+
+  /* 종목 버튼 */
+  .stock-btn { font-size: 12px; padding: 7px 11px; }
+  .stock-search { width: 120px; font-size: 12px; padding: 7px 28px 7px 10px; }
+  .stock-search-wrap { margin-left: 10px; }
+
+  /* 레이아웃 1컬럼 */
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .right-col { position: static; }
+
+  /* 차트 패널 헤더 */
+  .chart-panel-header {
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .chart-stock-name { font-size: 24px; }
+  .stock-info-left { gap: 8px; }
+  .stock-meta { flex-wrap: wrap; }
+
+  .price-block { align-items: flex-start; }
+  .price-value { font-size: 22px; }
+  .market-status { font-size: 10px; padding: 4px 10px; }
+
+  /* 패턴 바 */
+  .pattern-bar { padding: 8px 14px; flex-wrap: wrap; gap: 8px; }
+  .pattern-info { margin-left: 0; width: 100%; text-align: right; }
+
+  .type-select-wrap { padding: 8px 14px; gap: 5px; }
+  .type-btn { font-size: 11px; padding: 4px 9px; }
+
+  /* 통계 바 */
+  .stats-bar { padding: 8px 14px; }
+  .stat-pill { padding: 7px 10px; min-width: 70px; }
+  .stat-pill-val { font-size: 18px; }
+  .stat-pill-label { font-size: 10px; }
+
+  /* 차트 */
+  .chart-body { padding: 8px 10px 4px; }
+  canvas { max-height: 280px; }
+  .chart-legend { padding: 6px 14px 10px; gap: 12px; }
+  .legend-item { font-size: 11px; }
+
+  /* 테이블 */
+  .table-panel-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+  .table-title { font-size: 14px; }
+  thead th { padding: 8px 14px; font-size: 10px; }
+  tbody td { padding: 10px 14px; }
+  .td-date { font-size: 11px; }
+  .dart-link { font-size: 12px; }
+  .td-change { font-size: 12px; }
+
+  /* 통계 패널 */
+  .summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .summary-val { font-size: 20px; }
+  .stats-panel-body { padding: 12px 14px; }
+
+  .type-stat-name { font-size: 11px; width: 56px; }
+  .type-stat-fill { font-size: 11px; }
+  .dist-name { font-size: 11px; width: 56px; }
+  .dist-up, .dist-down { font-size: 10px; }
+
+  /* 뉴스 */
+  .news-summary { font-size: 12px; padding: 12px 14px; }
+  .news-item-title { font-size: 12px; }
+
+  /* 툴팁 */
+  .custom-tooltip { min-width: 180px; max-width: 240px; padding: 10px 14px; }
+  .tt-price { font-size: 20px; }
+  .tt-day-change { font-size: 12px; }
+
+  /* 티커 */
+  .ticker-bar { height: 26px; }
+  .ticker-item { font-size: 11px; padding: 0 16px; }
+}
+
+/* ══════════════════════════════════════════
+   소형 모바일 (≤480px)
+══════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .container { padding: 0 10px 40px; }
+
+  .header-right { display: none; }
+  .site-title { font-size: 15px; }
+
+  .chart-panel-header { padding: 12px 14px; }
+  .chart-stock-name { font-size: 20px; }
+  .price-value { font-size: 20px; }
+
+  .stats-bar { gap: 5px; }
+  .stat-pill { min-width: 60px; padding: 6px 8px; }
+  .stat-pill-val { font-size: 16px; }
+
+  canvas { max-height: 240px; }
+
+  .summary-grid { grid-template-columns: 1fr 1fr; }
+  .summary-val { font-size: 18px; }
+
+  .filter-wrap { gap: 4px; }
+  .filter-btn { font-size: 11px; padding: 3px 8px; }
+
+  /* 공시 테이블 — 제목 컬럼만 */
+  .td-type { display: none; }
+}
 </style>
 </head>
 <body>
