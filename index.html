@@ -1390,89 +1390,176 @@ tr.disc-highlight {
 @media (max-width: 768px) {
   .container { padding: 0 12px 48px; }
 
-  /* 헤더 */
-  .header {
-    flex-wrap: wrap;
-    padding: 12px 0 10px;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .header-left { gap: 10px; flex-wrap: wrap; }
+  /* ── 헤더 ── */
+  .header { padding: 10px 0 8px; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .header-left { gap: 8px; }
   .site-title { font-size: 16px; letter-spacing: 1px; }
   .header-sub { display: none; }
-
-  .header-right { gap: 6px; }
-  .hstat { padding: 6px 10px; }
-  .hstat-val { font-size: 14px; }
+  .header-right { gap: 5px; }
+  .hstat { padding: 5px 9px; }
+  .hstat-val { font-size: 13px; }
   .hstat-label { font-size: 9px; }
 
-  /* 임팩트 배너 */
-  .impact-banner { padding: 10px 14px; }
-  .impact-text { font-size: 12px; }
+  /* ── 1. 임팩트 배너 한 줄 ── */
+  .impact-banner {
+    padding: 7px 12px;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .impact-inner {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .impact-chip { font-size: 9px; padding: 2px 6px; flex-shrink: 0; }
+  .impact-text {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.2px;
+  }
   .impact-sub { display: none; }
+  .impact-close { font-size: 16px; flex-shrink: 0; }
 
-  /* 종목 버튼 */
-  .stock-btn { font-size: 12px; padding: 7px 11px; }
-  .stock-search { width: 120px; font-size: 12px; padding: 7px 28px 7px 10px; }
-  .stock-search-wrap { margin-left: 10px; }
+  /* ── 종목 버튼 ── */
+  .stock-btn { font-size: 12px; padding: 7px 10px; }
+  .stock-search { width: 110px; font-size: 12px; padding: 7px 26px 7px 9px; }
+  .stock-search-wrap { margin-left: 8px; }
 
-  /* 레이아웃 1컬럼 */
+  /* ── 레이아웃: 통계분석 위, 공시이력 아래 ── */
   .main-layout {
     grid-template-columns: 1fr;
     gap: 10px;
+    display: flex;
+    flex-direction: column;
   }
 
-  .right-col { position: static; }
+  /* 5. 모바일에서 순서: left-col 먼저, right-col 나중 */
+  .left-col { order: 1; }
+  .right-col { order: 2; position: static; }
 
-  /* 차트 패널 헤더 */
+  /* 차트 패널 내부에서 통계(right-col)를 차트 바로 아래로 올리기 위해
+     실제로는 right-col을 left-col 안 chart-panel 직후에 배치하는 CSS order 트릭 */
+
+  /* ── 2. 모바일 차트헤더: 종목명 + 국내정규장 옆에 ── */
   .chart-panel-header {
-    flex-wrap: wrap;
-    padding: 14px 16px;
-    gap: 10px;
+    padding: 12px 14px;
+    gap: 0;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .chart-stock-name { font-size: 24px; }
-  .stock-info-left { gap: 8px; }
-  .stock-meta { flex-wrap: wrap; }
+  /* 종목명과 market-status를 한 줄로 */
+  .stock-info-left {
+    width: 100%;
+    gap: 6px;
+  }
 
-  .price-block { align-items: flex-start; }
+  /* 종목명 행 = 이름 + 뱃지 가로 배치 */
+  .chart-stock-name {
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+  /* market-status를 price-block 밖으로 꺼내 종목명 옆으로 */
+  .price-block {
+    align-items: flex-start;
+    margin-top: 8px;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  /* market-status는 모바일에서 차트헤더 우상단 대신 종목명 옆 */
+  .market-status {
+    font-size: 10px;
+    padding: 3px 9px;
+    margin-bottom: 0;
+    order: unset;
+    position: static;
+  }
+
   .price-value { font-size: 22px; }
-  .market-status { font-size: 10px; padding: 4px 10px; }
+  .price-change { font-size: 13px; }
+  .stock-meta { flex-wrap: wrap; gap: 4px; }
+  .stock-sector { font-size: 11px; }
+  .stock-desc { font-size: 11px; }
+  .stock-ticker { font-size: 11px; }
 
-  /* 패턴 바 */
-  .pattern-bar { padding: 8px 14px; flex-wrap: wrap; gap: 8px; }
-  .pattern-info { margin-left: 0; width: 100%; text-align: right; }
+  /* ── 패턴 바 ── */
+  .pattern-bar { padding: 8px 14px; flex-wrap: wrap; gap: 6px; }
+  .pattern-info { margin-left: 0; font-size: 11px; }
+  .toggle-label { font-size: 12px; }
 
-  .type-select-wrap { padding: 8px 14px; gap: 5px; }
+  .type-select-wrap { padding: 7px 14px; gap: 5px; flex-wrap: wrap; }
   .type-btn { font-size: 11px; padding: 4px 9px; }
 
-  /* 통계 바 */
-  .stats-bar { padding: 8px 14px; }
-  .stat-pill { padding: 7px 10px; min-width: 70px; }
+  /* ── 통계 바 5개 → 2행으로 ── */
+  .stats-bar { padding: 8px 14px; flex-wrap: wrap; gap: 5px; }
+  .stat-pill { padding: 7px 10px; min-width: calc(50% - 3px); flex: none; }
+  .stat-pill:first-child { min-width: 100%; }
   .stat-pill-val { font-size: 18px; }
   .stat-pill-label { font-size: 10px; }
 
-  /* 차트 */
-  .chart-body { padding: 8px 10px 4px; }
-  canvas { max-height: 280px; }
+  /* ── 3. 모바일 차트 핀치줌 허용 ── */
+  .chart-body { padding: 8px 10px 4px; touch-action: pan-y; }
+  canvas { max-height: 260px; touch-action: none; }
   .chart-legend { padding: 6px 14px 10px; gap: 12px; }
   .legend-item { font-size: 11px; }
 
-  /* 테이블 */
-  .table-panel-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
-  .table-title { font-size: 14px; }
-  thead th { padding: 8px 14px; font-size: 10px; }
-  tbody td { padding: 10px 14px; }
+  /* ── 티커 ── */
+  .ticker-bar { height: 26px; margin: 8px 0; }
+  .ticker-item { font-size: 11px; padding: 0 14px; }
+  .ticker-name { font-size: 10px; }
+
+  /* ── 4. 공시이력 필터 한 줄로 ── */
+  .table-panel-header {
+    padding: 10px 14px;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .table-title { font-size: 14px; flex-shrink: 0; }
+  .filter-wrap {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 5px;
+    flex: 1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 2px;
+  }
+  .filter-wrap::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    font-size: 11px;
+    padding: 4px 9px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .table-count { font-size: 11px; white-space: nowrap; }
+
+  thead th { padding: 8px 12px; font-size: 10px; }
+  tbody td { padding: 9px 12px; }
   .td-date { font-size: 11px; }
   .dart-link { font-size: 12px; }
   .td-change { font-size: 12px; }
 
-  /* 통계 패널 */
+  /* ── 5. 통계 패널 순서 위로 (right-col order:2, left-col order:1 이미 설정) ── */
+  .stats-panel-header { padding: 14px 16px; }
+  .stats-panel-title { font-size: 14px; }
   .summary-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
   .summary-val { font-size: 20px; }
+  .summary-lbl { font-size: 10px; }
   .stats-panel-body { padding: 12px 14px; }
-
   .type-stat-name { font-size: 11px; width: 56px; }
   .type-stat-fill { font-size: 11px; }
   .dist-name { font-size: 11px; width: 56px; }
@@ -1483,13 +1570,9 @@ tr.disc-highlight {
   .news-item-title { font-size: 12px; }
 
   /* 툴팁 */
-  .custom-tooltip { min-width: 180px; max-width: 240px; padding: 10px 14px; }
-  .tt-price { font-size: 20px; }
+  .custom-tooltip { min-width: 170px; max-width: 230px; padding: 10px 12px; }
+  .tt-price { font-size: 19px; }
   .tt-day-change { font-size: 12px; }
-
-  /* 티커 */
-  .ticker-bar { height: 26px; }
-  .ticker-item { font-size: 11px; padding: 0 16px; }
 }
 
 /* ══════════════════════════════════════════
@@ -2159,6 +2242,41 @@ function renderChart(prices, disclosures, patternData) {
     }, 400);
   });
 
+  // 모바일 핀치줌
+  let pinchDist = null;
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      pinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      e.preventDefault();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && pinchDist !== null) {
+      e.preventDefault();
+      const newDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scale = pinchDist / newDist;
+      pinchDist = newDist;
+      const range = zoomMax - zoomMin;
+      const center = Math.round((zoomMin + zoomMax) / 2);
+      let newRange = clamp(Math.round(range * scale), 20, total - 1);
+      let newMin = Math.round(center - newRange / 2);
+      let newMax = newMin + newRange;
+      if (newMin < 0) { newMin = 0; newMax = newRange; }
+      if (newMax >= total) { newMax = total - 1; newMin = newMax - newRange; }
+      setZoom(clamp(newMin,0,total-1), clamp(newMax,0,total-1));
+      _applyZoom();
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => { pinchDist = null; });
+
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const range = zoomMax - zoomMin;
@@ -2752,6 +2870,35 @@ fetch(DATA_URL)
   });
 
 function initMarketStatus() {
+  // 모바일에서 market-status를 종목명 옆으로 이동
+  function positionMarketBadge() {
+    const ms = document.getElementById('marketStatus');
+    const nameEl = document.getElementById('currentStockName');
+    const priceBlock = document.querySelector('.price-block');
+    if (!ms || !nameEl || !priceBlock) return;
+    if (window.innerWidth <= 768) {
+      // 종목명 뒤에 배치
+      if (ms.parentElement !== nameEl.parentElement || ms.previousSibling !== nameEl) {
+        nameEl.parentElement.insertBefore(ms, nameEl.nextSibling);
+        nameEl.style.display = 'inline';
+        ms.style.display = 'inline-flex';
+        ms.style.verticalAlign = 'middle';
+        ms.style.marginLeft = '8px';
+      }
+    } else {
+      // 데스크톱: price-block 맨 위로 복원
+      if (ms.parentElement !== priceBlock) {
+        priceBlock.insertBefore(ms, priceBlock.firstChild);
+        ms.style.display = '';
+        ms.style.verticalAlign = '';
+        ms.style.marginLeft = '';
+        nameEl.style.display = '';
+      }
+    }
+  }
+  positionMarketBadge();
+  window.addEventListener('resize', positionMarketBadge);
+
   // 한국 시간 기준 장 운영: 평일 09:00~15:30
   function checkMarket() {
     const now = new Date();
